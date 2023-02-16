@@ -1,0 +1,23 @@
+{
+  "name": "vizfaculty-backend",
+  "version": "1.0.0",
+  "description": "Visiting faculty salary management web-app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saifkhan-rkp/VizFaculty-Backend.git"
+  },
+  "author": "procrastinators",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Saifkhan-rkp/VizFaculty-Backend/issues"
+  },
+  "homepage": "https://github.com/Saifkhan-rkp/VizFaculty-Backend#readme",
+  "dependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
