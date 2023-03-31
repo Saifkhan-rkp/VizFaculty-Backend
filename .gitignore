@@ -1,4 +1,4 @@
 node_modules
+private.key
 package-lock.json
 .env
-private.key
