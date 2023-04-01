@@ -3,6 +3,7 @@ const createError = require('http-errors');
 const routes = require('./routes');
 const securityMiddleware = require('./middleware/securityMiddleware');
 const infologger = require('./configs/logger');
+const { loggerMiddleware } = require('./middleware');
 
 const app = express();
 
@@ -14,7 +15,8 @@ process.on('unhandledRejection',(reason)=>{
 //Middlewares
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-securityMiddleware(app)
+loggerMiddleware(app);
+securityMiddleware(app);
 
 //routes for api
 routes(app);

@@ -61,7 +61,7 @@ const login = async (req, res, next) => {
         const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
 
         if (originalPassword !== req.body.password) {
-            return res.status(401).json("Mismatched email or password..!");
+            return res.status(401).send({success:false,message:"Mismatched email or password..!"});
         }
         const accessToken = jwt.sign(
             { id: user._id, role: user.role },
@@ -70,8 +70,8 @@ const login = async (req, res, next) => {
                 expiresIn: "7d",
             }
         );
-        const { password, ...info } = user._doc;
-        res.status(200).json({ ...info, token: accessToken });
+        const { password, _id, ...info } = user._doc;
+        res.status(200).send({ user:{...info}, success:true, message:"Logged in successfully..!",token: accessToken });
 
     } catch (error) {
         next({ statusCode: 500, message: error.message });
@@ -87,7 +87,7 @@ const forgotPassword = async (req, res, next) => {
         const userData = await User.findOne({ email })
         // console.log(!userData);
         if (!userData) {
-            return res.send({
+            return res.status(404).send({
                 success: false,
                 message: 'This email is not registered..!'
             })
@@ -105,7 +105,7 @@ const forgotPassword = async (req, res, next) => {
         if (mailStatus.accepted.includes(userData.email))
             res.send({ success: true, message: `Password reset email sent to ${userData.email}`, email: userData.email });
         else if (mailStatus.rejected.includes(userData.email))
-            res.send({ success: false, message: "Unable to send password reset email..!" })
+            res.status(503).send({ success: false, message: "Unable to send password reset email..!" })
     } catch (error) {
         if (!error.statusCode) error.statusCode = 500;
         next(error);
