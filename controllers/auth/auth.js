@@ -1,11 +1,11 @@
 const CryptoJS = require('crypto-js');
 const createError = require('http-errors');
 const jwt = require('jsonwebtoken');
-const { readFileSync } = require('fs');
+const { readFileSync, existsSync } = require('fs');
 const User = require('../../models/User');
 const sendMail = require('../../configs/sendMail');
 
-const SECRET_KEY = readFileSync("./private.key").toString();
+const SECRET_KEY =  existsSync('./private.key') ? readFileSync("./private.key").toString() : process.env.SECURE_SECRET_KEY;
 // console.log(SECRET_KEY);
 const register = async (req, res, next) => {
     try {
