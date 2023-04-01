@@ -29,7 +29,7 @@ app.use((req,res,next)=>{
 });
 
 app.use((error,req,res,next)=>{
-    infologger.error(error.message);
+    // infologger.error(error.message);
     console.log(error);
     res.statusCode = error.statusCode;
     res.send({
