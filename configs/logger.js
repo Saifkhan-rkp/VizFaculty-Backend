@@ -1,18 +1,18 @@
-const {createLogger,transports} = require('winston');
+// const {createLogger,transports} = require('winston');
 
-const infoLogger =createLogger({
-    transports:[
-        new transports.File({
-            filename:'./logs/infoLogs.log',
-            level:'info'
-        })
-    ]
-});
+// const infoLogger =createLogger({
+//     transports:[
+//         new transports.File({
+//             filename:'./logs/infoLogs.log',
+//             level:'info'
+//         })
+//     ]
+// });
 
-infoLogger.stream ={
-    write : (message, encoding)=>{
-        infoLogger.info(message);
-    }
-}
+// infoLogger.stream ={
+//     write : (message, encoding)=>{
+//         infoLogger.info(message);
+//     }
+// }
 
-module.exports = infoLogger;
+// module.exports = infoLogger;
