@@ -21,6 +21,7 @@ securityMiddleware(app);
 //routes for api
 routes(app);
 
+app.get('/',(req,res)=>{ res.status(200).send({success:true,message:"running..!"})});
 
 app.use((req,res,next)=>{
     const error = createError(404);
