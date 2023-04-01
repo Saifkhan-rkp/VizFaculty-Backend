@@ -1,5 +1,5 @@
 const morgan = require('morgan');
-const logger = require('.././configs/logger');
+// const logger = require('.././configs/logger');
 
 module.exports = {
     loggerMiddleware : (app)=>{
