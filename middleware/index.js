@@ -5,7 +5,7 @@ module.exports = {
     loggerMiddleware : (app)=>{
         // morgan.token('user-type', function (req, res) { return req.headers['user-type'] })
         // app.use(morgan(':method :url :status :user-type'));git rm -r --cached folder_name 
-        app.use(morgan("common",{stream: logger.stream }));
+        app.use(morgan("common"));
     },
     auth: require('./authMiddleware'),
     securityMiddleware:require('./securityMiddleware')
