@@ -1,2 +1,5 @@
 node_modules
+logs
+private.key
 package-lock.json
+.env
