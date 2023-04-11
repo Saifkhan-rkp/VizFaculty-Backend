@@ -116,7 +116,7 @@ const resetPassword = (req, res, next) => {
         const { token } = req.params;
         const bytes = CryptoJS.AES.decrypt(
             atob(token),
-            process.env.RESETPASS_SECRET_KEY
+            process.env.RESETPASS_SECRET_KEY || "VizFaculty is calculating"
         );
         const originalToken = bytes.toString(CryptoJS.enc.Utf8);
         jwt.verify(originalToken, SECRET_KEY, async (err, user) => {
