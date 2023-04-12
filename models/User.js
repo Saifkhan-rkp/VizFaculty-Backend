@@ -3,7 +3,7 @@ const { default: mongoose } = require("mongoose");
 const userSchema = mongoose.Schema({
     name: {
         type: String,
-        required: true,
+        required: [function () {return !this.remoteAdd},"register date is required"],
         trim: true
     },
     email: {
@@ -13,7 +13,7 @@ const userSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
+        required: [function () {return !this.remoteAdd},"Password Is Required"],
     },
     role: {
         type: String,
@@ -22,6 +22,10 @@ const userSchema = mongoose.Schema({
     verified: {
         type: Boolean,
         default: false
+    },
+    remoteAdd:{
+        type:Boolean,
+        default:false
     },
 },{
     timestapms:true
