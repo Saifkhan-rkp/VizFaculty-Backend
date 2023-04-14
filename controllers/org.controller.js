@@ -66,17 +66,17 @@ const createOrg = async (req, res, next) => {
     }
 };
 
-const getOrgById = (req, res, next) => {
+const getOrgById = async (req, res, next) => {
     const { orgId } = req.params;
     try {
         if (!mongoose.isValidObjectId(orgId))
-            return next({ message: "invalid refrence for request", statusCode: 404 });
-        const orgDoc = Organization.findOne({ _id: mongoose.Types.ObjectId(orgId) }, { _id: 0, });
+            return next({ message: "invalid refrence for request", statusCode: 400 });
+        const orgDoc =await Organization.findOne({ _id:new mongoose.Types.ObjectId(orgId) }, { _id: 0, });
         if (!orgDoc)
             return next({ message: "Not Found", statusCode: 404 });
-        res.send(orgDoc)
-
+        res.send(orgDoc);
     } catch (error) {
+        console.log(error);
         error.statusCode = 500;
         next(error)
     }

@@ -25,7 +25,14 @@ const timetableSchema = mongoose.Schema({
         type:mongoose.Types.ObjectId,
         ref:"User"
     },
-
-});
+    lastModifiedBy:{
+        type:mongoose.Types.ObjectId,
+        ref:"User"
+    },
+    deptId:{
+        type:mongoose.Types.ObjectId,
+        ref:"Department"
+    }, 
+},{timestamps:true});
 
 module.exports = mongoose.model("timetable", timetableSchema);

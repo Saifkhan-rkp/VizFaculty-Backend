@@ -78,7 +78,7 @@ const login = async (req, res, next) => {
     }
 };
 const verify = (req, res, next) => {
-
+    res.redirect("http://localhost:3000/auth/login")
 };
 const forgotPassword = async (req, res, next) => {
     try {
