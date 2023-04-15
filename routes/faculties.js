@@ -1,4 +1,4 @@
-const { createFaculty, getFaculty, modifyFaculty, deleteFaculty, getSingleSchedule } = require('../controllers');
+const { createFaculty, getFaculty, modifyFaculty, deleteFaculty, getSingleDaySchedule } = require('../controllers');
 
 const router = require('express').Router();
 
@@ -7,6 +7,6 @@ router
     .post("/faculty", createFaculty)
     .put("/faculty/:fId", modifyFaculty)
     .delete("/faculty/:fId", deleteFaculty)
-    .get("/faculty/schedule/:day", getSingleSchedule);
+    .get("/faculty/schedule/:day", getSingleDaySchedule);
     
 module.exports = router;

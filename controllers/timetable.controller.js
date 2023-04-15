@@ -5,20 +5,22 @@ const { Timetable, Department } = require("../models");
 const createTimetable = async (req, res, next) => {
     try {
         const ttBody = req.body;
-        ttBody.createdBy = new mongoose.Types.ObjectId("64384ff1def198fea620e358");//req.user.id
-        ttBody.lastModifiedBy = new mongoose.Types.ObjectId("64384ff1def198fea620e358"); //req.user.id
+        const roleId = "643aaad2b66fef684d8bad81";//req.user.roleId
+        ttBody.deptId = roleId;
+        ttBody.createdBy = new mongoose.Types.ObjectId("64384ff1def198fea620e358");//req.user.userId
+        ttBody.lastModifiedBy = new mongoose.Types.ObjectId("64384ff1def198fea620e358"); //req.user.userId
         const tt = new Timetable(ttBody);
         await tt.save();
-        // const updateDept = await Department.updateOne({},
-        //     {
-        //         $push: {
-        //             timetables:{
-        //                 $each:[tt._id],
-        //                 $slice:-10
-        //             }
-        //         }
-        //     })
-        res.status(201).send({ success: true, message: "Timetable Added Successfully", });//isAddedInDept: updateDept.modifiedCount>0 
+        const updateDept = await Department.updateOne({_id:roleId},
+            {
+                $push: {
+                    timetables:{
+                        $each:[tt._id],
+                        $slice:-10
+                    }
+                }
+            })
+        res.status(201).send({ success: true, message: "Timetable Added Successfully",isAddedInDept: updateDept.modifiedCount>0 });//isAddedInDept: updateDept.modifiedCount>0 
     } catch (error) {
         error.statusCode = 500;
         next(error);
@@ -31,7 +33,7 @@ const modifyTimetable = async (req, res, next) => {
         const { ttId } = req.params;
         if (!ttId || !mongoose.isValidObjectId(ttId))
             return next({ message: "invalid refrence for request", statusCode: 400 });
-        // modifiedData.lastModifiedBy = req.user.id;
+        // modifiedData.lastModifiedBy = req.user.userId;
         const modified = await Timetable.updateOne({ _id: new mongoose.Types.ObjectId(ttId) }, { $set: modifiedData, $currentDate: { updatedAt: true } });
         if (modified.modifiedCount > 0) 
             return res.status(201).send({ success: true, message: "Timetable Modified successfully" });
@@ -65,8 +67,14 @@ const deleteTimeTable = async (req, res, next) => {
         if (!mongoose.isValidObjectId(ttId))
             return next({ message: "invalid refrence for request", statusCode: 400 });
         const deletedTT = await Timetable.deleteOne({ _id: ttId });
+        const updateDept = await Department.updateOne({_id:roleId},
+            {
+                $pull: {
+                    timetables:ttId
+                }
+            })
         if (deletedTT.deletedCount > 0)
-            return res.status(201).send({ success: true, message: "Timetable Deleted Successfully" });
+            return res.status(201).send({ success: true, message: "Timetable Deleted Successfully", isDeptUpdated: updateDept.modifiedCount>0 });//isDeptUpdated: updateDept.modifiedCount>0
         next({ statusCode: 400, message: "Unable to delete Timetable/may it does'nt exists" });
     } catch (error) {
         error.statusCode = 500;

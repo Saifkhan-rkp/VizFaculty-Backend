@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const { rolesAndRef, addUser } = require("../configs/helpers");
-const { Faculty, Department, User } = require("../models");
+const { Faculty, Department, User, Timetable } = require("../models");
 
 async function addFaculty(facultyBody) {
     try {
@@ -111,7 +111,7 @@ const deleteFaculty = async (req, res, next) => {
         const roleId = "64384ff5def198fea620e35a";
         if (!mongoose.isValidObjectId(fId))
             return next({ message: "invalid refrence for request", statusCode: 400 });
-        const deletedFaculty = await Faculty.deleteOne({_id:fId});
+        const deletedFaculty = await Faculty.deleteOne({ _id: fId });
         if (deletedFaculty.deletedCount === 0)
             return next({ statusCode: 400, message: "Unable to delete Faculty/ may it does'nt exists" });
 
@@ -134,15 +134,88 @@ const deleteFaculty = async (req, res, next) => {
         next(error)
     }
 };
-
-const getSingleSchedule = async (req, res, next) =>{
+const days = ['sunday', "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+const getSingleDaySchedule = async (req, res, next) => {
     try {
-        const {day} = req.params;
-                
+        const { day } = req.params;
+        const dayOfDays = days[day];
+        const { userId, roleId } = { userId: "", roleId: "643ab3bf6d97ff1b67ea6cbc" }; //req.user;
+        const faculty = await Faculty.findOne({ _id: roleId }, { inDepartment: 1 });
+        console.log(faculty.inDepartment);
+        // const schedules = await Timetable.find({deptId:faculty.inDepartment},{schedule:{$eq:["schedule.monday.$.assignTo",roleId]}});//"schedules.monday.assignTo":roleId
+        const schedules = await Timetable.aggregate([
+            { $match: { deptId: faculty.inDepartment } },
+            //group first then project then group again maybe this will work
+            {
+                $group:{
+                    _id:"$_id",
+                    Myschedules:{$first:"$schedule."+dayOfDays}
+                }
+            },
+            {
+                $project: {
+                    schedules:{
+                        $filter:{
+                            input:"$Myschedules",
+                            as:"item",
+                            cond:{$eq:["$$item.assignTo",new mongoose.Types.ObjectId(roleId)]}
+                        }
+                    }
+                }
+            },
+            { $unwind: "$schedules" },
+            {
+                $group:{
+                    _id:"$schedules.assignTo",
+                    schedules:{$push:"$schedules"}
+                }
+            },
+        ])
+        console.log(schedules);
+        res.send(schedules);
     } catch (error) {
+        console.log(error);
         error.statusCode = 500;
         next(error)
     }
 };
+// $push: {
+// $cond: {
+//     if:{$eq:["$schedules.assignTo",new mongoose.Types.ObjectId(roleId)]},
+//     then:"$schedules",
+//     else:{}
+// }
 
-module.exports = { createFaculty, getFaculty, modifyFaculty, deleteFaculty, getSingleSchedule };
+// }
+// $push:{$elemMatch:{"$schedules.assignTo":roleId}}
+
+module.exports = { createFaculty, getFaculty, modifyFaculty, deleteFaculty, getSingleDaySchedule };
+
+// const schedules = await Timetable.aggregate([
+//     { $match: { deptId: faculty.inDepartment } },
+//     //group first then project then group again maybe this will work
+//     {
+//         $project: {
+//             schedules: {
+//                 $filter:{
+//                     input:"$schedule." + dayOfDays,
+//                     as:"item",
+//                     cond:{$eq:["$$item.assignTo",new mongoose.Types.ObjectId(roleId)]}
+//                 }
+//             }
+//         }
+//     },
+//     { $unwind: "$schedules" },
+//     {
+//         $group:{
+//             _id:"$schedules.assignTo",
+//             schedules:{$push:"$schedules"}
+//         }
+//     },
+//     {
+//         $group:{
+//             _id:null,
+            
+//         }
+//     }
+// ])
