@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const { Organization, User } = require("../models");
-const { addUser } = require("../configs/helpers");
+const { addUser, rolesAndRef } = require("../configs/helpers");
 
 async function addOrg(details) {
     console.log("here 4");
@@ -9,7 +9,7 @@ async function addOrg(details) {
         console.log("here 5");
         // let ret;
         await org.save();
-        const modifyRole =await User.updateOne({_id:details.auth},{role:"adminDept"});
+        const modifyRole =await User.updateOne({_id:details.auth},{role:rolesAndRef.adminDept.role, model_type:rolesAndRef.adminDept.ref, roleId: org._id});
         return { success: true, org, isRoleUpdated: modifyRole.modifiedCount>0 };
     } catch (error) {
         console.log(error);

@@ -5,4 +5,5 @@ module.exports = (app)=>{
     app.use("/api", require('./organization'));
     app.use("/api", require('./timetable'));
     app.use("/api", require('./department'));
+    app.use("/api", require('./faculties'));
 };

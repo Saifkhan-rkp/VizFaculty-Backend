@@ -1,5 +1,14 @@
 const { default: mongoose } = require("mongoose");
 
+function roleRef(role) {
+    if(role === "faculty")
+        return "Faculty";
+    else if(role === "adminDept")
+        return "Organization";
+    else if(role === "deptHead")
+        return "Deparment";
+}
+
 const userSchema = mongoose.Schema({
     name: {
         type: String,
@@ -19,6 +28,11 @@ const userSchema = mongoose.Schema({
         type: String,
         trim: true,
     },
+    roleId:{
+        type:mongoose.Types.ObjectId,
+        refPath:"model_type"
+    },
+    model_type:{type:String, enum:["Department","Organization","Faculty"]},
     verified: {
         type: Boolean,
         default: false

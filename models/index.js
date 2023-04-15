@@ -6,4 +6,5 @@ module.exports ={
     Timetable : require('./Timetable'),
     Attendance : require('./Attendance'),
     SalaryRequest : require('./SalaryRequest'),
+    Faculty : require('./Faculty'),
 }
