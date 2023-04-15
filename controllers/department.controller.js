@@ -3,13 +3,13 @@ const { User, Department, Organization } = require("../models");
 const { addUser, rolesAndRef } = require("../configs/helpers");
 
 
-const addDept = async (deptData, orgDetail) => {
+const addDept = async (deptData) => {
     try {
         const dept = new Department(deptData);
         console.log("here 5");
         // let ret;
         await dept.save();
-        const modifyOrg = await Organization.updateOne(orgDetail,
+        const modifyOrg = await Organization.updateOne({_id:dept.orgId},
             {
                 $push: {
                     departments: {
@@ -57,8 +57,9 @@ const createDept = async (req, res, next) => {
         const result = await addDept({
             deptName,
             code,
-            deptHeadId: userDetail.id
-        }, { _id: roleId });
+            deptHeadId: userDetail.id,
+            orgId:roleId
+        });
         if (result.success) {
             res.status(201).send({ success: true, message: "Deparment Added to your Organization/ Instatution Successfully!", ...result });
         } else if (!result.success) {

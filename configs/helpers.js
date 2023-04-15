@@ -20,9 +20,9 @@ const addUser = ({ intro, message, ...userDetail }) => {
     })
 }
 const rolesAndRef = {
-    faculty: { role : "faculty", ref:"Faculty" },
-    deptHead: {role:"deptHead", ref:"Department"},
-    adminDept: {role:"adminDept", ref:"Organization"} 
+    faculty: { role : "faculty", ref:"faculties" },
+    deptHead: {role:"deptHead", ref:"departments"},
+    adminDept: {role:"adminDept", ref:"organizations"} 
 }
 
 module.exports = { addUser, rolesAndRef }

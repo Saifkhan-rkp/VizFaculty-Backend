@@ -138,4 +138,14 @@ const resetPassword = (req, res, next) => {
     }
 };
 
-module.exports = { register, login, verify, forgotPassword, resetPassword };
+const completeRegister =  async (req, res, next) => {
+    try {
+        const {token} = req.params;
+                
+    } catch (error) {
+        error.statusCode = 500;
+        next(error)
+    }
+};
+
+module.exports = { register, login, verify, forgotPassword, resetPassword, completeRegister };

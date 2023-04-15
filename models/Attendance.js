@@ -38,11 +38,11 @@ const attendanceSchema = mongoose.Schema({
     },
     userId:{
         type:mongoose.Types.ObjectId,
-        ref:"User",
+        ref:"users",
         required:true
     }
 },{
     timestapms:true
 });
 
-module.exports = mongoose.model("attendance",attendanceSchema);
+module.exports = mongoose.model("attendances",attendanceSchema);

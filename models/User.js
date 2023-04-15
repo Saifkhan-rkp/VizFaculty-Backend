@@ -32,7 +32,7 @@ const userSchema = mongoose.Schema({
         type:mongoose.Types.ObjectId,
         refPath:"model_type"
     },
-    model_type:{type:String, enum:["Department","Organization","Faculty"]},
+    model_type:{type:String, enum:["departments","organizations","faculties"]},
     verified: {
         type: Boolean,
         default: false

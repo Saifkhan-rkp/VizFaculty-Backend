@@ -5,7 +5,7 @@ const scheduleSchema = mongoose.Schema({
     timeFrom:{type:String},
     timeTo:{type:String},
     teachingType:{type:String, trim:true},
-    assignTo:{type:mongoose.Types.ObjectId,ref:"User"}
+    assignTo:{type:mongoose.Types.ObjectId,ref:"users"}
 });
 const timetableSchema = mongoose.Schema({
     name:{
@@ -23,16 +23,16 @@ const timetableSchema = mongoose.Schema({
     },
     createdBy:{
         type:mongoose.Types.ObjectId,
-        ref:"User"
+        ref:"users"
     },
     lastModifiedBy:{
         type:mongoose.Types.ObjectId,
-        ref:"User"
+        ref:"users"
     },
     deptId:{
         type:mongoose.Types.ObjectId,
-        ref:"Department"
+        ref:"departments"
     }, 
 },{timestamps:true});
 
-module.exports = mongoose.model("timetable", timetableSchema);
+module.exports = mongoose.model("timetables", timetableSchema);
