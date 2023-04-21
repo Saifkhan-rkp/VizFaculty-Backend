@@ -10,6 +10,7 @@ function roleRef(role) {
 }
 
 const userSchema = mongoose.Schema({
+    profilePhoto:{type:String, default:"default"},
     name: {
         type: String,
         required: [function () {return !this.remoteAdd},"register date is required"],

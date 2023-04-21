@@ -7,6 +7,6 @@ module.exports = {
         // app.use(morgan(':method :url :status :user-type'));git rm -r --cached folder_name 
         app.use(morgan("common"));
     },
-    auth: require('./authMiddleware'),
+    authM: require('./authMiddleware'),
     securityMiddleware:require('./securityMiddleware')
 };

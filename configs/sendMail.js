@@ -104,7 +104,7 @@ const sendMail = async ({ name, email, token, type = "resetPass", intro, role })
     } else if (type === "addUser") {
         subject = "Complete Registeration Proces";
         emailTemps.addUserEmail.body.intro = `Welcome to VizFaculty! ${intro}`;
-        emailTemps.addUserEmail.body.action.button.link = `${process.env.BASE_URL}/auth/reset-password/${await token}`;
+        emailTemps.addUserEmail.body.action.button.link = `${process.env.BASE_URL}/auth/completeRegister/${await email}/${await token}`;
         emailBody = await mailGenerator.generate(emailTemps.addUserEmail);
 
     } else if (type === "notifyRole") {
@@ -116,7 +116,6 @@ const sendMail = async ({ name, email, token, type = "resetPass", intro, role })
         emailTemps.notifyRole.body.name = await name;
         emailTemps.notifyRole.body.action.button.link = `${process.env.BASE_URL}/${await role}/dashboard`;
         emailBody = await mailGenerator.generate(emailTemps.notifyRole);
-
     }
 
     let mailOptions = {
