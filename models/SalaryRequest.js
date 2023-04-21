@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 
 const salaryRequestSchema = mongoose.Schema({
     applyDate:{type:Date},
+    amount:{type:Number},
     userId:{type:mongoose.Types.ObjectId,ref:"users"},
     forwardToHead:{isForwarded:{type:Boolean},status:{type:String}},
     forwardToAdminDept:{isForwarded:{type:Boolean},status:{type:String}},

@@ -179,6 +179,22 @@ const getSingleDaySchedule = async (req, res, next) => {
         next(error)
     }
 };
+
+const getFaculties = async (req,res,next) =>{
+    try {
+        const {role, roleId} = req.user;
+        let search={};
+        if (role === "deptHead") 
+            search.inDepartment = roleId;
+        if(role === "admindept")
+            search.inOrganization = roleId;
+        const faculties = await Faculty.find(search).populate([{path:"faculty", select:"name email profile"},{path:"inDepartment", select:"_id deptName code"}])
+        res.send({success:true, faculties});
+    } catch (error) {
+        error.statusCode =500;
+        next(error)
+    }
+};
 // $push: {
 // $cond: {
 //     if:{$eq:["$schedules.assignTo",new mongoose.Types.ObjectId(roleId)]},
@@ -189,7 +205,7 @@ const getSingleDaySchedule = async (req, res, next) => {
 // }
 // $push:{$elemMatch:{"$schedules.assignTo":roleId}}
 
-module.exports = { createFaculty, getFaculty, modifyFaculty, deleteFaculty, getSingleDaySchedule };
+module.exports = { createFaculty, getFaculty, modifyFaculty, deleteFaculty, getSingleDaySchedule, getFaculties };
 
 // const schedules = await Timetable.aggregate([
 //     { $match: { deptId: faculty.inDepartment } },

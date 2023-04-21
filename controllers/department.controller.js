@@ -132,4 +132,16 @@ const deleteDept = async (req, res, next) => {
         next(error)
     }
 }
-module.exports = { createDept, getDept, modifyDept, deleteDept };
+
+const getDepartments = async (req,res,next) =>{
+    try {
+        const {roleId} = req.user;
+        const depts = await Department.find({orgId:roleId}).populate("deptHeadId","name email profile");
+        res.send({success:true, depts})      
+    } catch (error) {
+        error.statusCode =500;
+        next(error)
+    }
+};
+
+module.exports = { createDept, getDept, modifyDept, deleteDept, getDepartments };

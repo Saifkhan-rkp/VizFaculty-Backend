@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 // const { readFileSync, existsSync } = require('fs');
 const { User } = require('../../models');
 const sendMail = require('../../configs/sendMail');
+const { default: mongoose } = require('mongoose');
 
 const SECRET_KEY = process.env.ADD_USER_SECRET || "VizFaculty is Calculating";
 // console.log(SECRET_KEY);
