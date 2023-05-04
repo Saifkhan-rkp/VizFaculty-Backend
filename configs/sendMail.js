@@ -106,7 +106,7 @@ const sendMail = async ({ name, email, token, type = "resetPass", intro, role })
         emailTemps.addUserEmail.body.intro = `Welcome to VizFaculty! ${intro}`;
         emailTemps.addUserEmail.body.action.button.link = `${process.env.BASE_URL}/auth/completeRegister/${await email}/${await token}`;
         emailBody = await mailGenerator.generate(emailTemps.addUserEmail);
-
+        console.log(`${process.env.BASE_URL}/auth/completeRegister/${await email}/${await token}`);
     } else if (type === "notifyRole") {
         let yourRole = await role;
         if(yourRole==="faculty") yourRole = "Faculty";

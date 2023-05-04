@@ -9,18 +9,18 @@ const authM = (req, res, next)=>{
         if (token) {
           jwt.verify(token, (process.env.ADD_USER_SECRET || "VizFaculty is Calculating"), (err, user) => {
             if (err) {
-              return res.status(401).json("Token is not valid!");
+              return res.status(401).send({success:false,message:"Token is not valid!"});
             }
             req.user = user;
             next();
           });
         }
         else {
-          return res.status(401).json("You are not authenticated!");
+          return res.status(401).send({success:false,message:"You are not authenticated!"});
         }
       } catch (err) {
         console.log(err);
-        return res.send(500).send()
+        return res.status(500).send({success:false, message:err.message});
       }    
 }
 module.exports = authM;

@@ -6,4 +6,6 @@ module.exports = (app)=>{
     app.use("/api", require('./timetable'));
     app.use("/api", require('./department'));
     app.use("/api", require('./faculties'));
+    app.use("/api", require('./attendance'));
+    app.use("/api", require('./contactUs'));
 };

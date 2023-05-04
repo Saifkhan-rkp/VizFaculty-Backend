@@ -147,14 +147,16 @@ const completeRegister = async (req, res, next) => {
             if (err) {
                 return next({ statusCode: 401, message: "Link is not valid!" });
             }
+            console.log(user);
             const hashedPass = CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
-            const isRegisterComplete = await User.findOneAndUpdate({ email: user.email }, { name, password: hashedPass }, { returnDocument: 'after' });
-            if (isRegisterComplete.modifiedCount > 0)
-                return res.status(201).send({ success: true, message: "Register Complete Successfully..!" });
+            const isRegisterComplete = await User.findOneAndUpdate({ email: user.email }, { name, password: hashedPass }, { returnDocument: 'after', projection:{name:1, email:1} });
+            if (isRegisterComplete)
+                return res.status(201).send({ success: true, user:isRegisterComplete, message: "Register Complete Successfully..!" });
 
             res.send({ success: false, message: "there is some problem while Registering User..!" });
         })
     } catch (error) {
+        // console.log(error);
         error.statusCode = 500;
         next(error)
     }

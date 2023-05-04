@@ -21,9 +21,8 @@ const attendanceSchema = mongoose.Schema({
         type:String,
         required:true
     },
-    sessionTime:{
-        
-    },
+    timeFrom:{type:String},
+    timeTo:{type:String},
     totalHours:{
         type:Number,
         required:true
@@ -36,9 +35,9 @@ const attendanceSchema = mongoose.Schema({
         type:Number,
         required:true
     },
-    userId:{
+    facultyId:{
         type:mongoose.Types.ObjectId,
-        ref:"users",
+        ref:"faculties",
         required:true
     }
 },{
