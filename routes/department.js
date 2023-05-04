@@ -6,7 +6,7 @@ const router = require('express').Router();
 router
     .get("/dept/:deptId", getDept)
     .get("/getDepartments", authM, getDepartments)
-    .post("/dept", createDept)
+    .post("/dept", authM, createDept)
     .put("/dept/:deptId", modifyDept)
     .delete("/dept/:deptId", deleteDept);
 

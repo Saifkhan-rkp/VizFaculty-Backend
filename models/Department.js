@@ -6,7 +6,12 @@ const departmentSchema = mongoose.Schema({
     deptName:{type:String, required:true },
     code:{type:String, required:true},
     faculties:[{type:mongoose.Types.ObjectId, ref:"users"}],
-    timetables:[{type:mongoose.Types.ObjectId, ref:"timetables"}]
+    timetables:[{type:mongoose.Types.ObjectId, ref:"timetables"}],
+    rates:{
+        TH:Number,
+        PR:Number,
+        TU:Number
+    }
 },{timestamps:true});
 
 module.exports = mongoose.model("departments",departmentSchema);

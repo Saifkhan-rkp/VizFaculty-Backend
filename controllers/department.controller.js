@@ -38,9 +38,8 @@ const addDept = async (deptData) => {
 const createDept = async (req, res, next) => {
     try {
         console.log("here..");
-        const { deptName, code, email } = req.body;
-        // const {roleId} = req.user;
-        const roleId = "64384ff5def198fea620e35a";
+        const { deptName, code, email, headName } = req.body;
+        const {roleId} = req.user;
         const userAlive = await User.findOne({ email });
         const userDetail = {}
         console.log("here 2");
@@ -136,11 +135,13 @@ const deleteDept = async (req, res, next) => {
 const getDepartments = async (req,res,next) =>{
     try {
         const {roleId} = req.user;
-        const depts = await Department.find({orgId:roleId}).populate("deptHeadId","name email profile");
+        console.log(roleId,);
+        const depts = await Department.find({orgId:roleId}).populate("deptHeadId","name email profilePhoto").exec();
+        // console.log(depts);
         res.send({success:true, depts})      
     } catch (error) {
         error.statusCode =500;
-        next(error)
+        next(error);
     }
 };
 

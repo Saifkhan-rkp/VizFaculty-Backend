@@ -81,4 +81,15 @@ const deleteTimeTable = async (req, res, next) => {
         next(error);
     }
 };
-module.exports = { createTimetable, modifyTimetable, getTimetable, deleteTimeTable }
+
+const getAllTimetables = async (req,res,next) =>{
+    try {
+        const {roleId} = req.user;
+        const timetables = await Timetable.find({deptId:roleId});
+        res.send({success:true,message:"found", timetables, ttCount:timetables.length});
+    } catch (error) {
+        error.statusCode =500;
+        next(error)
+    }
+};
+module.exports = { createTimetable, modifyTimetable, getTimetable, deleteTimeTable, getAllTimetables }

@@ -7,4 +7,5 @@ module.exports ={
     Attendance : require('./Attendance'),
     SalaryRequest : require('./SalaryRequest'),
     Faculty : require('./Faculty'),
+    ContactUs : require('./ContactUs')
 }

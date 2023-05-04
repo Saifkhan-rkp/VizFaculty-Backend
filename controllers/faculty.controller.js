@@ -31,9 +31,9 @@ async function addFaculty(facultyBody) {
 const createFaculty = async (req, res, next) => {
     try {
         const { email, name = "User", abbrivation, hasAccessOf = "none" } = req.body;
-        // const {roleId, userId} = req.uesr;
-        const userId = "643a8ec1bc092fda8eb5384e";
-        const roleId = "643aaad2b66fef684d8bad81";
+        const {roleId, userId} = req.user;
+        // const userId = "643a8ec1bc092fda8eb5384e";
+        // const roleId = "643aaad2b66fef684d8bad81";
         const userAlive = await User.findOne({ email });
         const getDept = await Department.findById(roleId);
         console.log(getDept);
@@ -183,12 +183,12 @@ const getSingleDaySchedule = async (req, res, next) => {
 const getFaculties = async (req,res,next) =>{
     try {
         const {role, roleId} = req.user;
-        let search={};
+        const search={};
         if (role === "deptHead") 
             search.inDepartment = roleId;
         if(role === "admindept")
             search.inOrganization = roleId;
-        const faculties = await Faculty.find(search).populate([{path:"faculty", select:"name email profile"},{path:"inDepartment", select:"_id deptName code"}])
+        const faculties = await Faculty.find(search).populate([{path:"faculty", select:"name email profile"},{path:"inDepartment", select:"_id deptName code"}]);
         res.send({success:true, faculties});
     } catch (error) {
         error.statusCode =500;
