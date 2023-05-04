@@ -3,3 +3,4 @@ logs
 private.key
 package-lock.json
 .env
+temp.js
