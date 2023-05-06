@@ -6,7 +6,7 @@ const router = require('express').Router();
 router
     .get("/tt/:ttId", getTimetable)
     .get("/timetables", authM, getAllTimetables)
-    .post("/tt", createTimetable)
+    .post("/tt", authM, createTimetable)
     .put("/tt/:ttId", modifyTimetable)
     .delete("/tt/:ttId", deleteTimeTable);
     

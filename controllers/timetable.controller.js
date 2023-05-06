@@ -5,11 +5,15 @@ const { Timetable, Department } = require("../models");
 const createTimetable = async (req, res, next) => {
     try {
         const ttBody = req.body;
-        const roleId = "643aaad2b66fef684d8bad81";//req.user.roleId
+        const {roleId, userId} = req.user;
         ttBody.deptId = roleId;
-        ttBody.createdBy = new mongoose.Types.ObjectId("64384ff1def198fea620e358");//req.user.userId
-        ttBody.lastModifiedBy = new mongoose.Types.ObjectId("64384ff1def198fea620e358"); //req.user.userId
+        ttBody.createdBy = userId;//req.user.userId
+        ttBody.lastModifiedBy = userId; //req.user.userId
         const tt = new Timetable(ttBody);
+        const err = tt.validateSync();
+        if (err)
+            next({message:err?.message?.split(","), statusCode:304});
+        
         await tt.save();
         const updateDept = await Department.updateOne({_id:roleId},
             {
@@ -64,10 +68,12 @@ const getTimetable = async (req, res, next) => {
 const deleteTimeTable = async (req, res, next) => {
     try {
         const { ttId } = req.params;
+        // const {roleId} = req.user;
         if (!mongoose.isValidObjectId(ttId))
             return next({ message: "invalid refrence for request", statusCode: 400 });
+        const tt = await Timetable.findById(ttId,{deptId:1}); 
         const deletedTT = await Timetable.deleteOne({ _id: ttId });
-        const updateDept = await Department.updateOne({_id:roleId},
+        const updateDept = await Department.updateOne({_id:tt.deptId},
             {
                 $pull: {
                     timetables:ttId
@@ -85,7 +91,7 @@ const deleteTimeTable = async (req, res, next) => {
 const getAllTimetables = async (req,res,next) =>{
     try {
         const {roleId} = req.user;
-        const timetables = await Timetable.find({deptId:roleId});
+        const timetables = await Timetable.find({deptId:roleId}).populate([{path:"createdBy", select:"name"},{path:"lastModifiedBy", select:"name"}]);
         res.send({success:true,message:"found", timetables, ttCount:timetables.length});
     } catch (error) {
         error.statusCode =500;
