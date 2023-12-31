@@ -101,7 +101,7 @@ const forgotPassword = async (req, res, next) => {
         );
         const hashedToken = CryptoJS.AES.encrypt(token, process.env.RESETPASS_SECRET_KEY || "VizFaculty is calculating").toString();
         // console.log("http://localhost:4000/reset-password/",atob(token));
-        const mailStatus = await sendMail({ name: userData.name, token: btoa(token), email: userData.email, type: "resetPass" });
+        const mailStatus = await sendMail({ name: userData.name, token: btoa(hashedToken), email: userData.email, type: "resetPass" });
         console.log(`http://localhost:4000/api/reset-password/${btoa(hashedToken)}`);
         if (mailStatus.accepted.includes(userData.email))
             res.send({ success: true, message: `Password reset email sent to ${userData.email}`, email: userData.email });
