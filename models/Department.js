@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 
-const departmentSchema = mongoose.Schema({
+const departmentSchema = new mongoose.Schema({
     deptHeadId:{type:mongoose.Types.ObjectId, ref:"users", required:true},
     orgId:{ type:mongoose.Types.ObjectId, ref:"organizations"},
     deptName:{type:String, required:true },

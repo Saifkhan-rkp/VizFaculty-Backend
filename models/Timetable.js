@@ -1,13 +1,13 @@
 const { default: mongoose } = require("mongoose");
 
-const scheduleSchema = mongoose.Schema({
+const scheduleSchema =  {
     subject:{type:String, trim:true},
     timeFrom:{type:String},
     timeTo:{type:String},
     teachingType:{type:String, trim:true},
     assignTo:{type:mongoose.Types.ObjectId,ref:"faculties"}
-});
-const timetableSchema = mongoose.Schema({
+};
+const timetableSchema = new mongoose.Schema({
     name:{
         type:String,
         required:true

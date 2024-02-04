@@ -9,7 +9,7 @@ function roleRef(role) {
         return "Deparment";
 }
 
-const userSchema = mongoose.Schema({
+const userSchema = new mongoose.Schema({
     profilePhoto:{type:String, default:"default"},
     name: {
         type: String,

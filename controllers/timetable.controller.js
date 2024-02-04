@@ -49,6 +49,21 @@ const modifyTimetable = async (req, res, next) => {
         next(error)
     }
 };
+const modifyScheduleDay = async (req, res, next) => {
+    try {
+        const { day, schedule } = req.body;
+        const { ttId } = req.params;
+        console.log(req.body);
+        if (!day || !ttId || !mongoose.isValidObjectId(ttId))
+            return next({ message: "invalid refrence for request", statusCode: 400 });
+        const result = await Timetable.updateOne({_id: ttId},{$set:{[`schedule.${day}`]: schedule }});
+        console.log(result);
+        res.status(201).send({success: result.modifiedCount>0, message:`schedule updated successfully for ${day}`})
+    } catch (error) {
+        error.statusCode = 500;
+        next(error)
+    }
+};
 
 const getTimetable = async (req, res, next) => {
     try {
@@ -98,4 +113,4 @@ const getAllTimetables = async (req,res,next) =>{
         next(error)
     }
 };
-module.exports = { createTimetable, modifyTimetable, getTimetable, deleteTimeTable, getAllTimetables }
+module.exports = { createTimetable, modifyTimetable, getTimetable, deleteTimeTable, getAllTimetables, modifyScheduleDay }

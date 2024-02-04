@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 
-const attendanceSchema = mongoose.Schema({
+const attendanceSchema = new mongoose.Schema({
     date:{
         type:Date,
         required:true

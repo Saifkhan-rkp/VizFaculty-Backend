@@ -1,7 +1,7 @@
 const { default: mongoose } = require("mongoose");
 
 
-const contactUsSchema = mongoose.Schema({
+const contactUsSchema = new mongoose.Schema({
     fullName:{type:String, trim:true, required:true},
     email:{type:String, trim:true, required:true},
     message:{type:String, trim:true, required:true}
