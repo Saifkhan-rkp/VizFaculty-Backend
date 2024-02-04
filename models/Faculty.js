@@ -1,7 +1,7 @@
 const { default: mongoose } = require("mongoose");
 
 
-const facultySchema = mongoose.Schema({
+const facultySchema = new mongoose.Schema({
     abbrivation:{type:String, required:true},
     faculty:{type:mongoose.Types.ObjectId, ref:"users", required:true},
     template:{type:String},

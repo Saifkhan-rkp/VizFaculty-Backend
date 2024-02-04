@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 
-const organizationSchema = mongoose.Schema({
+const organizationSchema = new mongoose.Schema({
     name:{type:String, required:true},
     code:{type:String, required:true},
     auth:{type:mongoose.Types.ObjectId, ref:"users", required:true},

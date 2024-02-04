@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 
-const salaryRequestSchema = mongoose.Schema({
+const salaryRequestSchema = new mongoose.Schema({
     applyDate:{type:Date},
     amount:{type:Number},
     userId:{type:mongoose.Types.ObjectId,ref:"users"},
