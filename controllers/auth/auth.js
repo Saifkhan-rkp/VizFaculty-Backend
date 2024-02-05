@@ -72,7 +72,7 @@ const login = async (req, res, next) => {
             }
         );
         const { password, _id, model_type, roleId, ...info } = user._doc;
-        res.status(200).send({ user: { ...info }, success: true, message: "Logged in successfully..!", token: accessToken });
+        res.status(200).send({ user: { ...info, accessToken, _id, roleId }, success: true, message: "Logged in successfully..!", });
 
     } catch (error) {
         next({ statusCode: 500, message: error.message });
