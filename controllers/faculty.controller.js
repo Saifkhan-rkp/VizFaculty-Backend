@@ -139,9 +139,9 @@ const getSingleDaySchedule = async (req, res, next) => {
     try {
         const { day } = req.params;
         const dayOfDays = days[day];
-        const { userId, roleId } = { userId: "", roleId: "643ab3bf6d97ff1b67ea6cbc" }; //req.user;
+        const { userId, roleId } = req.user;
         const faculty = await Faculty.findOne({ _id: roleId }, { inDepartment: 1 });
-        console.log(faculty.inDepartment);
+        // console.log(faculty.inDepartment);
         // const schedules = await Timetable.find({deptId:faculty.inDepartment},{schedule:{$eq:["schedule.monday.$.assignTo",roleId]}});//"schedules.monday.assignTo":roleId
         const schedules = await Timetable.aggregate([
             { $match: { deptId: faculty.inDepartment } },
@@ -171,8 +171,8 @@ const getSingleDaySchedule = async (req, res, next) => {
                 }
             },
         ])
-        console.log(schedules);
-        res.send(schedules);
+        // console.log(schedules[0]?.schedules);
+        res.status(201).send({schedules: schedules[0]?.schedules || []});
     } catch (error) {
         console.log(error);
         error.statusCode = 500;
