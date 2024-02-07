@@ -10,6 +10,6 @@ router
     .post("/faculty", authM, createFaculty)
     .put("/faculty/:fId", modifyFaculty)
     .delete("/faculty/:fId", deleteFaculty)
-    .get("/faculty/schedule/:day", getSingleDaySchedule);
+    .get("/faculty/schedule/:day", authM, getSingleDaySchedule);
     
 module.exports = router;
