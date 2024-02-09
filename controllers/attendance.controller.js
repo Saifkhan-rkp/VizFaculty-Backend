@@ -1,12 +1,14 @@
 
 const { default: mongoose } = require("mongoose");
 const { Attendance, Timetable, Faculty } = require("../models");
+const catchAsync = require("../configs/catchAsync");
+const { TimetableService } = require("../services/timetable.service");
 
 const getAttendance = async (req, res, next) => {
     try {
         const days = ['sunday', "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
         const { date } = req.params;
-        const { roleId } = { roleId: "643ab3bf6d97ff1b67ea6cbc" };//req.user;
+        const { roleId } = req.user;
         const dates = date.split("&")
         const faculty = await Faculty.findById(roleId);
         if (dates.length === 1) {
@@ -83,7 +85,15 @@ const submitAttendance = async (req, res, next) => {
     }
 };
 
-module.exports = { getAttendance, submitAttendance };
+const todaysAttendance = catchAsync(async (req, res, next)=>{
+    const {roleId, userId } = req.user;
+    const {date } = req.params;
+    const reqDate = new Date(date);
+    const schedule = TimetableService.getSingleDaySchedule(deptId, roleId, reqDate.getDay()); 
+    
+});
+
+module.exports = { getAttendance, submitAttendance, todaysAttendance };
 
 // // {$mergeObjects:[{schedule:},{yearAndBranch:"$name"}]}
 // { $match: { deptId: faculty.inDepartment } },

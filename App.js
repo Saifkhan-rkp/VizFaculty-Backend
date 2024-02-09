@@ -31,6 +31,9 @@ app.use((req,res,next)=>{
 app.use((error,req,res,next)=>{
     // infologger.error(error.message);
     console.log(error);
+    if (!error.statusCode) {
+        error.statusCode = 500;
+    }
     res.statusCode = error.statusCode;
     res.send({
         success:false,

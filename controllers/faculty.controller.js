@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { rolesAndRef, addUser } = require("../configs/helpers");
 const { Faculty, Department, User, Timetable } = require("../models");
+const { TimetableService } = require("../services/timetable.service");
 
 async function addFaculty(facultyBody) {
     try {
@@ -134,45 +135,17 @@ const deleteFaculty = async (req, res, next) => {
         next(error)
     }
 };
-const days = ['sunday', "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
+
 const getSingleDaySchedule = async (req, res, next) => {
     try {
         const { day } = req.params;
-        const dayOfDays = days[day];
         const { userId, roleId } = req.user;
         const faculty = await Faculty.findOne({ _id: roleId }, { inDepartment: 1 });
         // console.log(faculty.inDepartment);
         // const schedules = await Timetable.find({deptId:faculty.inDepartment},{schedule:{$eq:["schedule.monday.$.assignTo",roleId]}});//"schedules.monday.assignTo":roleId
-        const schedules = await Timetable.aggregate([
-            { $match: { deptId: faculty.inDepartment } },
-            //group first then project then group again maybe this will work
-            {
-                $group:{
-                    _id:"$_id",
-                    Myschedules:{$first:"$schedule."+dayOfDays}
-                }
-            },
-            {
-                $project: {
-                    schedules:{
-                        $filter:{
-                            input:"$Myschedules",
-                            as:"item",
-                            cond:{$eq:["$$item.assignTo",new mongoose.Types.ObjectId(roleId)]}
-                        }
-                    }
-                }
-            },
-            { $unwind: "$schedules" },
-            {
-                $group:{
-                    _id:"$schedules.assignTo",
-                    schedules:{$push:"$schedules"}
-                }
-            },
-        ])
+        const schedules = await TimetableService.getSingleDaySchedule(faculty?.inDepartment, roleId, day);
         // console.log(schedules[0]?.schedules);
-        res.status(201).send({schedules: schedules[0]?.schedules || []});
+        res.status(201).send({schedules});
     } catch (error) {
         console.log(error);
         error.statusCode = 500;
