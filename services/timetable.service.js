@@ -5,6 +5,7 @@ const { Timetable } = require("../models");
 
 const getSingleDaySchedule = async (deptId, roleId, day) => {
     const dayOfDays = Constants.DAYS[day];
+    // console.log(dayOfDays, deptId, roleId, day);
     const result = await Timetable.aggregate([
         { $match: { deptId: deptId } },
         //group first then project then group again maybe this will work
@@ -33,7 +34,7 @@ const getSingleDaySchedule = async (deptId, roleId, day) => {
             }
         },
     ]);
-
+    // console.log(result);
     return result[0]?.schedules || [];
 
 };

@@ -3,6 +3,8 @@ const { default: mongoose } = require("mongoose");
 const { Attendance, Timetable, Faculty } = require("../models");
 const catchAsync = require("../configs/catchAsync");
 const { TimetableService } = require("../services/timetable.service");
+const facultyService = require("../services/faculty.service");
+const attendanceService = require("../services/attendance.service");
 
 const getAttendance = async (req, res, next) => {
     try {
@@ -88,9 +90,14 @@ const submitAttendance = async (req, res, next) => {
 const todaysAttendance = catchAsync(async (req, res, next)=>{
     const {roleId, userId } = req.user;
     const {date } = req.params;
+    // const { "x-date": opdate } = req.headers;
     const reqDate = new Date(date);
-    const schedule = TimetableService.getSingleDaySchedule(deptId, roleId, reqDate.getDay()); 
-    
+    console.log("dates --> ",date, reqDate);
+    const faculty = await facultyService.getFacultyDepartment(roleId);
+    const attendance = await attendanceService.getTodaysAttendance(faculty._id, reqDate);
+    const schedule = await TimetableService.getSingleDaySchedule(faculty.inDepartment, roleId, reqDate.getDay()); 
+    console.log("todays schedule -> ", schedule, attendance);
+    res.status(201).send({success:true, schedule, attendance});
 });
 
 module.exports = { getAttendance, submitAttendance, todaysAttendance };
