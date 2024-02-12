@@ -5,6 +5,7 @@ const catchAsync = require("../configs/catchAsync");
 const { TimetableService } = require("../services/timetable.service");
 const facultyService = require("../services/faculty.service");
 const attendanceService = require("../services/attendance.service");
+const departmentService = require("../services/department.service");
 
 const getAttendance = async (req, res, next) => {
     try {
@@ -76,9 +77,11 @@ const getAttendance = async (req, res, next) => {
 
 const submitAttendance = async (req, res, next) => {
     try {
-        const body = req.body;
+        const attendanceBody = req.body;
         const {roleId} = req.user;
-        const att = new Attendance(body);
+        const faculty = await facultyService.getFacultyDepartment(roleId);
+        const dept = await departmentService.getDepartmentDetails(faculty.inDepartment);   
+        const att = new Attendance(attendanceBody);
         att.save();
         res.send({success:true, message:"attendance submitted..!"})
     } catch (error) {
@@ -92,10 +95,15 @@ const todaysAttendance = catchAsync(async (req, res, next)=>{
     const {date } = req.params;
     // const { "x-date": opdate } = req.headers;
     const reqDate = new Date(date);
-    console.log("dates --> ",date, reqDate);
+    // console.log("dates --> ",date, reqDate);
     const faculty = await facultyService.getFacultyDepartment(roleId);
     const attendance = await attendanceService.getTodaysAttendance(faculty._id, reqDate);
-    const schedule = await TimetableService.getSingleDaySchedule(faculty.inDepartment, roleId, reqDate.getDay()); 
+    const schedule = await TimetableService.getSingleDaySchedule(faculty.inDepartment, roleId, reqDate.getDay());
+    if (attendance.length > 0 && schedule.length > 0) {
+      schedule.forEach(scd => scd.marked = attendance.some(att => att.scheduleId === scd?._id));
+    } else {
+      schedule.forEach(scd => scd.marked = false)
+    }
     console.log("todays schedule -> ", schedule, attendance);
     res.status(201).send({success:true, schedule, attendance});
 });

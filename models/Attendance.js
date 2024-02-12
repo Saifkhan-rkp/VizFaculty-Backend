@@ -9,6 +9,9 @@ const attendanceSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
+    scheduleId:{
+        type:mongoose.Types.ObjectId,    
+    },
     subject:{
         type:String,
         required:true
