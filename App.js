@@ -9,6 +9,7 @@ const app = express();
 
 process.on('unhandledRejection',(reason)=>{
     // infologger.error(reason);
+    console.log(reason);
     process.exit(1);
 });
 

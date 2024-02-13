@@ -6,6 +6,7 @@ const { TimetableService } = require("../services/timetable.service");
 const facultyService = require("../services/faculty.service");
 const attendanceService = require("../services/attendance.service");
 const departmentService = require("../services/department.service");
+const { timeDifference } = require("../configs/helpers");
 
 const getAttendance = async (req, res, next) => {
     try {
@@ -77,12 +78,19 @@ const getAttendance = async (req, res, next) => {
 
 const submitAttendance = async (req, res, next) => {
     try {
-        const attendanceBody = req.body;
+        const { day, date, attendanceArray} = req.body;
         const {roleId} = req.user;
         const faculty = await facultyService.getFacultyDepartment(roleId);
-        const dept = await departmentService.getDepartmentDetails(faculty.inDepartment);   
-        const att = new Attendance(attendanceBody);
-        att.save();
+        const dept = await departmentService.getDepartmentDetails(faculty.inDepartment); 
+        attendanceArray.forEach(attendance => {
+          attendance.rate = dept.rates[attendance.teachingType];
+          attendance.totalHours = timeDifference(attendance.timeFrom, attendance.timeTo)
+          attendance.amount = attendance.rate * attendance.totalHours; 
+          return attendance; 
+        });
+        const att = await Attendance.findOneAndUpdate({facultyId:roleId, date:date},{day, attendance: attendanceArray, date, facultyId:roleId}, {upsert:true});
+        // att.save();
+        console.log(att);
         res.send({success:true, message:"attendance submitted..!"})
     } catch (error) {
         error.statusCode = 500;
