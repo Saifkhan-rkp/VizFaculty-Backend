@@ -9,32 +9,34 @@ const attendanceSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-    subject:{
-        type:String,
-        required:true
-    },
-    yearAndBranch:{
-        type:String,
-        required:true
-    },
-    teachingType:{
-        type:String,
-        required:true
-    },
-    timeFrom:{type:String},
-    timeTo:{type:String},
-    totalHours:{
-        type:Number,
-        required:true
-    },
-    rate:{
-        type:Number,
-        required:true
-    },
-    amount:{
-        type:Number,
-        required:true
-    },
+    attedance:[{
+        subject:{
+            type:String,
+            required:true
+        },
+        yearAndBranch:{
+            type:String,
+            required:true
+        },
+        teachingType:{
+            type:String,
+            required:true
+        },
+        timeFrom:{type:String},
+        timeTo:{type:String},
+        totalHours:{
+            type:Number,
+            required:true
+        },
+        rate:{
+            type:Number,
+            required:true
+        },
+        amount:{
+            type:Number,
+            required:true
+        },
+    }],
     facultyId:{
         type:mongoose.Types.ObjectId,
         ref:"faculties",

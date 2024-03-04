@@ -5,7 +5,7 @@ const scheduleSchema =  {
     timeFrom:{type:String},
     timeTo:{type:String},
     teachingType:{type:String, trim:true},
-    assignTo:{type:mongoose.Types.ObjectId,ref:"faculties"}
+    assignTo:{type:mongoose.Types.ObjectId, ref:"faculties"}
 };
 const timetableSchema = new mongoose.Schema({
     name:{

@@ -2,7 +2,7 @@
 module.exports ={
     Organization : require('./Organization'),
     Department : require('./Department'),
-    User : require('./User'),
+    User : require('./User.model'),
     Timetable : require('./Timetable'),
     Attendance : require('./Attendance'),
     SalaryRequest : require('./SalaryRequest'),
