@@ -74,12 +74,21 @@ const createDept = async (req, res, next) => {
 const getDept = async (req, res, next) => {
     try {
         const { deptId } = req.params;
+        console.log(req?.user);
+        // const { roleId } = req.user;
         if (!mongoose.isValidObjectId(deptId))
             return next({ message: "invalid refrence for request", statusCode: 400 });
-        const dept = await Department.findById(deptId, { _id: 0 });
+        const dept = await Department.findById(deptId, { _id: 0 }).populate([
+            {
+            path:"deptHeadId", 
+            select:"name email role profilePhoto"
+        },{
+            path:"orgId",
+            select:"name code"
+        }]);
         if (!dept)
             return next({ message: "Not Found/ Not Exists", statusCode: 404 });
-        res.status(201).send({ success: true, message: "found", dept });
+        res.status(201).send({ success: true, message: "found", ...dept._doc });
     } catch (error) {
         next.statusCode = 500;
         next(error);
