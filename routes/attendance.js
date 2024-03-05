@@ -4,9 +4,10 @@ const { authM } = require('../middleware');
 
 const router = require('express').Router();
 
-router
-    .get("/attendance/:date", authM, getAttendance)
-    .get("/attendance/todays/:date", authM, todaysAttendance)
-    .post("/attendance", submitAttendance);
-    
+router.get("/attendance/:date", authM, getAttendance);
+
+router.get("/attendance/todays/:date", authM, todaysAttendance);
+
+router.post("/attendance", authM, submitAttendance);
+
 module.exports = router;

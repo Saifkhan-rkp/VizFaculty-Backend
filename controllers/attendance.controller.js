@@ -79,6 +79,7 @@ const getAttendance = async (req, res, next) => {
 const submitAttendance = async (req, res, next) => {
     try {
         const { day, date, attendanceArray} = req.body;
+        console.log(req.body);
         const {roleId} = req.user;
         const faculty = await facultyService.getFacultyDepartment(roleId);
         const dept = await departmentService.getDepartmentDetails(faculty.inDepartment); 
@@ -88,6 +89,7 @@ const submitAttendance = async (req, res, next) => {
           attendance.amount = attendance.rate * attendance.totalHours; 
           return attendance; 
         });
+        console.log(attendanceArray);
         const att = await Attendance.findOneAndUpdate({facultyId:roleId, date:date},{day, attendance: attendanceArray, date, facultyId:roleId}, {upsert:true});
         // att.save();
         console.log(att);
@@ -107,8 +109,8 @@ const todaysAttendance = catchAsync(async (req, res, next)=>{
     const faculty = await facultyService.getFacultyDepartment(roleId);
     const attendance = await attendanceService.getTodaysAttendance(faculty._id, reqDate);
     const schedule = await TimetableService.getSingleDaySchedule(faculty.inDepartment, roleId, reqDate.getDay());
-    if (attendance.length > 0 && schedule.length > 0) {
-      schedule.forEach(scd => scd.marked = attendance.some(att => att.scheduleId === scd?._id));
+    if (attendance?.attendance.length > 0 && schedule.length > 0) {
+      schedule.forEach(scd => scd.marked = attendance?.attendance.some(att => att?._id === scd?._id));
     } else {
       schedule.forEach(scd => scd.marked = false)
     }
