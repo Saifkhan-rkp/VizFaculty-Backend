@@ -2,9 +2,12 @@ const jwt = require("jsonwebtoken");
 
 const authM = (req, res, next) => {
   try {
-    const token = req.headers.authorization &&
+    const token = (req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer") &&
-      req.headers.authorization.split(" ")[1];
+      req.headers.authorization.split(" ")[1]) ||
+      (req.headers.Authorization &&
+        req.headers.Authorization.startsWith("Bearer") &&
+        req.headers.Authorization.split(" ")[1]);
     if (token) {
       jwt.verify(token, (process.env.ADD_USER_SECRET || "VizFaculty is Calculating"), (err, user) => {
         if (err) {
