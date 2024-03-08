@@ -147,7 +147,7 @@ const todaysAttendance = catchAsync(async (req, res, next) => {
 const getAttendanceByMonth = catchAsync(async (req, res, next) => {
   const { month } = req.params;
   const user = req.user;
-  console.log("month & user", parseInt(month), user);
+  // console.log("month & user", parseInt(month), user);
   const result = await Attendance.aggregate([{
     $match: {
       facultyId: new mongoose.Types.ObjectId(user.roleId),
@@ -157,7 +157,7 @@ const getAttendanceByMonth = catchAsync(async (req, res, next) => {
     }
 
   }]);
-  console.log(result);
+  // console.log(result);
   res.send({ success: true, data: result })
 });
 
