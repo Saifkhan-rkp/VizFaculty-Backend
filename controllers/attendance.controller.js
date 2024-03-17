@@ -161,7 +161,37 @@ const getAttendanceByMonth = catchAsync(async (req, res, next) => {
   res.send({ success: true, data: result })
 });
 
-module.exports = { getAttendance, submitAttendance, todaysAttendance, getAttendanceByMonth };
+const submitNFCAttendance = catchAsync(async (req, res, next) => {
+  const { roleId, date } = req.params;
+  const reqDate = new Date(date);
+  const faculty = await facultyService.getFacultyDepartment(roleId);
+  const dept = await departmentService.getDepartmentDetails(
+    faculty.inDepartment
+  );
+  const schedule = await TimetableService.getSingleDaySchedule(
+    faculty.inDepartment,
+    roleId,
+    reqDate.getDay()
+  );
+  schedule.forEach((attendance) => {
+    attendance.rate = dept.rates[attendance.teachingType];
+    attendance.totalHours = timeDifference(
+      attendance.timeFrom,
+      attendance.timeTo
+    );
+    attendance.amount = attendance.rate * attendance.totalHours;
+    return attendance;
+  });
+  // console.log(date.split(" ")[0].toUpperCase(), scshedule, date, roleId);
+
+  const att = await Attendance.findOneAndUpdate(
+    { facultyId: roleId, date: date },
+    { day: date.split(" ")[0].toUpperCase(), attendance: schedule, date, facultyId: roleId },
+    { upsert: true, new:true }
+  );
+  res.send({ success: Object.keys(att.toObject()).length > 0, message:"Attendance recorded" })
+})
+module.exports = { getAttendance, submitAttendance, todaysAttendance, getAttendanceByMonth, submitNFCAttendance };
 
 // // {$mergeObjects:[{schedule:},{yearAndBranch:"$name"}]}
 // { $match: { deptId: faculty.inDepartment } },
