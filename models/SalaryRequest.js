@@ -8,8 +8,8 @@ const salaryRequestSchema = new mongoose.Schema({
     contactNo: { type: Number, required: true },
     userId: { type: mongoose.Types.ObjectId, ref: "users", required: true },
     facultyId: { type: mongoose.Types.ObjectId, ref: "faculties", required: true },
-    forwardToHead: { isForwarded: { type: Boolean, default: false }, status: { type: String, default: "pending" }, date: { type: Date } },
-    forwardToAdminDept: { isForwarded: { type: Boolean, default: false }, status: { type: String, default: "pending" } },
+    forwardToHead: { fwdId: { type: mongoose.Types.ObjectId , required:true}, isForwarded: { type: Boolean, default: false }, status: { type: String, default: "pending" }, date: { type: Date } },
+    forwardToAdminDept: { fwdId: { type: mongoose.Types.ObjectId , required:true}, isForwarded: { type: Boolean, default: false }, status: { type: String, default: "pending" }, date: { type: Date } },
 }, { timestamps: true });
 
 module.exports = mongoose.model("SalaryRequests", salaryRequestSchema);

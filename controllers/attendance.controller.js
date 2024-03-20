@@ -140,7 +140,7 @@ const todaysAttendance = catchAsync(async (req, res, next) => {
   } else {
     schedule.forEach((scd) => (scd.marked = false));
   }
-  console.log("todays schedule -> ", schedule, attendance);
+  // console.log("todays schedule -> ", schedule, attendance);
   res.status(201).send({ success: true, schedule, attendance });
 });
 
