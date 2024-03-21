@@ -11,6 +11,16 @@ module.exports = {
         const result = Attendance.findOne({ facultyId: fId, date: { $gte: startOfDay.toISOString(), $lte: endOfDay.toISOString() } });
         return result;
     },
+    async getAttendanceByDateRange(fId, startDate, endDate) {
+        var startOfDay = new Date(startDate);
+        startOfDay.setUTCHours(0, 0, 0, 0);
+
+        var endOfDay = new Date(endDate);
+        endOfDay.setUTCHours(23, 59, 59, 999);
+
+        const result = Attendance.find({ facultyId: fId, date: { $gte: startOfDay.toISOString(), $lte: endOfDay.toISOString() } });
+        return result;
+    },
     async aggregateSalary(roleId, month) {
         const result = await Attendance.aggregate([
             {

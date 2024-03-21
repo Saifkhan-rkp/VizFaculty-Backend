@@ -4,6 +4,7 @@ const { Faculty, Department, User, Timetable, Attendance } = require("../models"
 const { TimetableService } = require("../services/timetable.service");
 const catchAsync = require("../configs/catchAsync");
 const { aggregateSalary } = require("../services/attendance.service");
+const { getFacultyDepartment } = require("../services/faculty.service");
 
 async function addFaculty(facultyBody) {
     const faculty = new Faculty(facultyBody);
@@ -232,13 +233,13 @@ const getFaculties = async (req, res, next) => {
 const getFacultyHeaderStatus = catchAsync(async (req, res, next) => {
     const { roleId } = req.user;
     const { month } = req.query;
-    const faculty = await Faculty.findOne({ _id: roleId }, { inDepartment: 1 });
+    const faculty = await getFacultyDepartment(roleId);
     const aggrSalary = await aggregateSalary(roleId, month);
     const totalSubject = await TimetableService.aggregateSubjectCount(roleId, faculty.inDepartment);
     // console.log(totalSubject)
     res.send({ 
         totalTH: aggrSalary?.totalTH || 0, 
-        totalPR: aggrSalary?.totalPR,
+        totalPR: aggrSalary?.totalPR || 0,
         totalSalary: aggrSalary?.totalSalary || 0, 
         totalAttendence: aggrSalary?.totalAttendence || 0, 
         totalSubject 
