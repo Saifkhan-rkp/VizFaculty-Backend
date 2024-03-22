@@ -18,7 +18,7 @@ module.exports = {
         var endOfDay = new Date(endDate);
         endOfDay.setUTCHours(23, 59, 59, 999);
 
-        const result = Attendance.find({ facultyId: fId, date: { $gte: startOfDay.toISOString(), $lte: endOfDay.toISOString() } });
+        const result = await Attendance.find({ facultyId: fId, date: { $gte: startOfDay.toISOString(), $lte: endOfDay.toISOString() } });
         return result;
     },
     async aggregateSalary(roleId, month) {
@@ -56,5 +56,40 @@ module.exports = {
         ]);
         // console.log(result);
         return result[0] || { _id: 0, totalAttendence: 0, totalSalary: 0 };
+    },
+    async aggregateSalaryByDateRange(fId, startDate, endDate) {
+        var startOfDay = new Date(startDate);
+        startOfDay.setUTCHours(0, 0, 0, 0);
+
+        var endOfDay = new Date(endDate);
+        endOfDay.setUTCHours(23, 59, 59, 999);
+
+        const result = await Attendance.aggregate([
+            {
+                $match: {
+                    facultyId: new mongoose.Types.ObjectId(fId),
+                    // date: { $gte: startOfDay.toISOString(), $lte: endOfDay.toISOString() }
+                    date: { $gte: startOfDay, $lte: endOfDay }
+                }
+            },
+            {
+                $project: {
+                    facultyId: 1,
+                    attendance: 1
+                }
+            },
+            {
+                $unwind:"$attendance"
+            },
+            {
+                $group: {
+                    _id: "$facultyId",
+                    totalSalary: { $sum: "$attendance.amount" }
+                }
+            }
+        ]);
+
+        // console.log(result);
+        return result[0] || {};
     }
 }
