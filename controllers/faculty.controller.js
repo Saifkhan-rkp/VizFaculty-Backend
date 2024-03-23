@@ -4,6 +4,8 @@ const { Faculty, Department, User, Timetable, Attendance } = require("../models"
 const { TimetableService } = require("../services/timetable.service");
 const catchAsync = require("../configs/catchAsync");
 const { aggregateSalary } = require("../services/attendance.service");
+const { getFacultyDepartment } = require("../services/faculty.service");
+const facultyService = require("../services/faculty.service");
 
 async function addFaculty(facultyBody) {
     const faculty = new Faculty(facultyBody);
@@ -207,12 +209,19 @@ const getFaculties = async (req, res, next) => {
     try {
         const { role, roleId } = req.user;
         const search = {};
-        if (role === "deptHead") search.inDepartment = roleId;
-        if (role === "admindept") search.inOrganization = roleId;
-        const faculties = await Faculty.find(search).populate([
+        const populate = [
             { path: "faculty", select: "name email profile" },
             { path: "inDepartment", select: "_id deptName code" },
-        ]);
+        ]
+        if (role === "faculty") {
+            populate.pop();
+            const faculty = await facultyService.getFacultyDepartment(roleId);
+            search.inDepartment = faculty.inDepartment;
+            search._id = { $ne: roleId };
+        }
+        if (role === "deptHead") search.inDepartment = roleId;
+        if (role === "admindept") search.inOrganization = roleId;
+        const faculties = await Faculty.find(search).populate(populate);
         res.send({ success: true, faculties });
     } catch (error) {
         error.statusCode = 500;
@@ -232,16 +241,16 @@ const getFaculties = async (req, res, next) => {
 const getFacultyHeaderStatus = catchAsync(async (req, res, next) => {
     const { roleId } = req.user;
     const { month } = req.query;
-    const faculty = await Faculty.findOne({ _id: roleId }, { inDepartment: 1 });
+    const faculty = await getFacultyDepartment(roleId);
     const aggrSalary = await aggregateSalary(roleId, month);
     const totalSubject = await TimetableService.aggregateSubjectCount(roleId, faculty.inDepartment);
     // console.log(totalSubject)
-    res.send({ 
-        totalTH: aggrSalary?.totalTH || 0, 
-        totalPR: aggrSalary?.totalPR,
-        totalSalary: aggrSalary?.totalSalary || 0, 
-        totalAttendence: aggrSalary?.totalAttendence || 0, 
-        totalSubject 
+    res.send({
+        totalTH: aggrSalary?.totalTH || 0,
+        totalPR: aggrSalary?.totalPR || 0,
+        totalSalary: aggrSalary?.totalSalary || 0,
+        totalAttendence: aggrSalary?.totalAttendence || 0,
+        totalSubject
     })
 });
 module.exports = {

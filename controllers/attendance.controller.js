@@ -130,9 +130,11 @@ const todaysAttendance = catchAsync(async (req, res, next) => {
     roleId,
     reqDate.getDay()
   );
+  const attCopy = attendance?.toObject();
   if (attendance?.attendance.length > 0 && schedule.length > 0) {
-    schedule.forEach(
-      (scd) =>
+    attCopy?.attendance.forEach(att => (att.marked=true));
+    // console.log(attCopy.attendance);
+    schedule.forEach((scd) =>
       (scd.marked = attendance?.attendance.some((att) =>
         att?._id.equals(scd?._id)
       ))
@@ -141,7 +143,7 @@ const todaysAttendance = catchAsync(async (req, res, next) => {
     schedule.forEach((scd) => (scd.marked = false));
   }
   // console.log("todays schedule -> ", schedule, attendance);
-  res.status(201).send({ success: true, schedule, attendance });
+  res.status(201).send({ success: true, schedule, attendance:attCopy });
 });
 
 const getAttendanceByMonth = catchAsync(async (req, res, next) => {

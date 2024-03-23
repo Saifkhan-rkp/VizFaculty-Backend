@@ -5,7 +5,7 @@ const salaryRequestSchema = new mongoose.Schema({
     amount: { type: Number, required: true },
     dateFrom: { type: Date, required: true },
     dateTo: { type: Date, required: true },
-    contactNo: { type: Number, required: true },
+    contactNo: { type: String, required: true },
     userId: { type: mongoose.Types.ObjectId, ref: "users", required: true },
     facultyId: { type: mongoose.Types.ObjectId, ref: "faculties", required: true },
     forwardToHead: { fwdId: { type: mongoose.Types.ObjectId , required:true}, isForwarded: { type: Boolean, default: false }, status: { type: String, default: "pending" }, date: { type: Date } },
