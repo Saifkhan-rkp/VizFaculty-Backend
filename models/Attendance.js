@@ -36,6 +36,10 @@ const attendanceSchema = new mongoose.Schema({
             type:Number,
             required:true
         },
+        transfered:{
+            type:Boolean,
+            default:false
+        }
     }],
     facultyId:{
         type:mongoose.Types.ObjectId,
