@@ -9,4 +9,6 @@ module.exports = (app)=>{
     app.use("/api", require('./attendance'));
     app.use("/api", require('./contactUs'));
     app.use("/api", require('./salaryRequest.route'));
+    app.use("/api", require('./transferSchedule.route'));
+
 };
