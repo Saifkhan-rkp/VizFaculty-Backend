@@ -27,7 +27,7 @@ const getAttendance = async (req, res, next) => {
       const newDate = new Date(date);
       const dayOfDays = days[1];
       const recs = await Attendance.find({ facultyId: roleId, date: newDate });
-      console.log(recs.length);
+      // console.log(recs.length);
       if (recs.length < 1) {
         const schedules = await Timetable.aggregate([
           { $match: { deptId: faculty.inDepartment } },
@@ -85,7 +85,7 @@ const getAttendance = async (req, res, next) => {
 const submitAttendance = async (req, res, next) => {
   try {
     const { day, date, attendanceArray } = req.body;
-    console.log(req.body);
+    // console.log(req.body);
     const { roleId } = req.user;
     const faculty = await facultyService.getFacultyDepartment(roleId);
     const dept = await departmentService.getDepartmentDetails(
@@ -100,14 +100,14 @@ const submitAttendance = async (req, res, next) => {
       attendance.amount = attendance.rate * attendance.totalHours;
       return attendance;
     });
-    console.log(attendanceArray);
+    // console.log(attendanceArray);
     const att = await Attendance.findOneAndUpdate(
       { facultyId: roleId, date: date },
       { day, attendance: attendanceArray, date, facultyId: roleId },
       { upsert: true }
     );
     // att.save();
-    console.log(att);
+    // console.log(att);
     res.send({ success: true, message: "attendance submitted..!" });
   } catch (error) {
     error.statusCode = 500;
@@ -133,7 +133,6 @@ const todaysAttendance = catchAsync(async (req, res, next) => {
   );
   const transfered = await TransferScheduleService.getTodaysTransfered(faculty._id, reqDate);
   const transferedToMe = await TransferScheduleService.getTodaysTransferedToMe(faculty._id, reqDate);
-  console.log(transfered, transferedToMe)
   const attCopy = attendance?.toObject();
   if (schedule.length > 0) {
     if (attendance?.attendance.length > 0) {
@@ -141,21 +140,26 @@ const todaysAttendance = catchAsync(async (req, res, next) => {
       // console.log(attCopy.attendance);
       schedule.forEach((scd) =>
       (scd.marked = attendance?.attendance.some((att) =>
-        att?._id.equals(scd?._id)
+      att?._id.equals(scd?._id)
       ))
       );
     }
     if (transfered.length > 0) {
       schedule.forEach((scd) =>
       (scd.transfered = transfered.some((trnf) =>
-        trnf?.transferScheduleId.equals(scd?._id)
+      trnf?.transferScheduleId.equals(scd?._id)
       )));
     }
   } else {
     schedule.forEach((scd) => (scd.marked = false));
   }
-  // console.log("todays schedule -> ", schedule, attendance);
-  res.status(201).send({ success: true, schedule, attendance: attCopy, transfered: transferedToMe });
+  const tempTranferTome=[]
+  transferedToMe.forEach((scd) => 
+    // scd.toObject()
+    tempTranferTome.push({...scd._doc,newSubject: attendance?.attendance.find((att) => att?._id.equals(scd?._id))?.subject, marked : attendance?.attendance.some((att) => att?._id.equals(scd?._id))}) 
+  );
+  // console.log("Tr to me schedule -> ", tempTranferTome);
+  res.status(201).send({ success: true, schedule, attendance: attCopy, transfered: tempTranferTome });
 });
 
 const getAttendanceByMonth = catchAsync(async (req, res, next) => {

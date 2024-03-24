@@ -6,8 +6,12 @@ exports.TransferScheduleService = {
         startOfDay.setUTCHours(0, 0, 0, 0);
         var endOfDay = new Date(date);
         endOfDay.setUTCHours(23, 59, 59, 999);
-        console.log(startOfDay, endOfDay);
-        const result = await TransferSchedule.find({ transferTo: transferedTo });
+        const result = await TransferSchedule.find({ 
+            transferTo: transferedTo, 
+            transferDate: { $gte: startOfDay, $lte: endOfDay } 
+        })
+        .select("-transferScheduleId -transferDate -assignTo -transferTo -userId")
+        .populate({ path: "transferFrom", select: "abbrivation" });
         return result;
     },
     async getTodaysTransfered(transferedFrom, date) {
@@ -15,8 +19,14 @@ exports.TransferScheduleService = {
         startOfDay.setUTCHours(0, 0, 0, 0);
         var endOfDay = new Date(date);
         endOfDay.setUTCHours(23, 59, 59, 999);
-        console.log(startOfDay, endOfDay);
-        const result = await TransferSchedule.find({ transferFrom: transferedFrom, transferDate:startOfDay });
+        const result = await TransferSchedule.find({ 
+            transferFrom: transferedFrom, 
+            transferDate: { $gte: startOfDay, $lte: endOfDay } 
+        }, 
+        { 
+            transferScheduleId: 1, 
+            transferTo:1 
+        });
         return result;
     }
 }
