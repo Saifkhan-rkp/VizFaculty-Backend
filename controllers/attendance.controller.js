@@ -6,6 +6,7 @@ const facultyService = require("../services/faculty.service");
 const attendanceService = require("../services/attendance.service");
 const departmentService = require("../services/department.service");
 const { timeDifference } = require("../configs/helpers");
+const { TransferScheduleService } = require("../services/transferSchedule.service");
 
 const getAttendance = async (req, res, next) => {
   try {
@@ -130,20 +131,31 @@ const todaysAttendance = catchAsync(async (req, res, next) => {
     roleId,
     reqDate.getDay()
   );
+  const transfered = await TransferScheduleService.getTodaysTransfered(faculty._id, reqDate);
+  const transferedToMe = await TransferScheduleService.getTodaysTransferedToMe(faculty._id, reqDate);
+  console.log(transfered, transferedToMe)
   const attCopy = attendance?.toObject();
-  if (attendance?.attendance.length > 0 && schedule.length > 0) {
-    attCopy?.attendance.forEach(att => (att.marked=true));
-    // console.log(attCopy.attendance);
-    schedule.forEach((scd) =>
+  if (schedule.length > 0) {
+    if (attendance?.attendance.length > 0) {
+      attCopy?.attendance.forEach(att => (att.marked = true));
+      // console.log(attCopy.attendance);
+      schedule.forEach((scd) =>
       (scd.marked = attendance?.attendance.some((att) =>
         att?._id.equals(scd?._id)
       ))
-    );
+      );
+    }
+    if (transfered.length > 0) {
+      schedule.forEach((scd) =>
+      (scd.transfered = transfered.some((trnf) =>
+        trnf?.transferScheduleId.equals(scd?._id)
+      )));
+    }
   } else {
     schedule.forEach((scd) => (scd.marked = false));
   }
   // console.log("todays schedule -> ", schedule, attendance);
-  res.status(201).send({ success: true, schedule, attendance:attCopy });
+  res.status(201).send({ success: true, schedule, attendance: attCopy, transfered: transferedToMe });
 });
 
 const getAttendanceByMonth = catchAsync(async (req, res, next) => {
@@ -189,9 +201,9 @@ const submitNFCAttendance = catchAsync(async (req, res, next) => {
   const att = await Attendance.findOneAndUpdate(
     { facultyId: roleId, date: date },
     { day: date.split(" ")[0].toUpperCase(), attendance: schedule, date, facultyId: roleId },
-    { upsert: true, new:true }
+    { upsert: true, new: true }
   );
-  res.send({ success: Object.keys(att.toObject()).length > 0, message:"Attendance recorded" })
+  res.send({ success: Object.keys(att.toObject()).length > 0, message: "Attendance recorded" })
 })
 module.exports = { getAttendance, submitAttendance, todaysAttendance, getAttendanceByMonth, submitNFCAttendance };
 
