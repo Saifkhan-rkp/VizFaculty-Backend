@@ -6,7 +6,7 @@ const { addUser, rolesAndRef } = require("../configs/helpers");
 const addDept = async (deptData) => {
     try {
         const dept = new Department(deptData);
-        console.log("here 5");
+        // console.log("here 5");
         // let ret;
         await dept.save();
         const modifyOrg = await Organization.updateOne({ _id: dept.orgId },
@@ -37,14 +37,14 @@ const addDept = async (deptData) => {
 
 const createDept = async (req, res, next) => {
     try {
-        console.log("here..");
+        // console.log("here..");
         const { deptName, code, email, headName } = req.body;
         const { roleId } = req.user;
         const userAlive = await User.findOne({ email });
         const userDetail = {}
-        console.log("here 2");
+        // console.log("here 2");
         if (userAlive) {
-            console.log("here 3");
+            // console.log("here 3");
             userDetail.id = userAlive.id;
         } else {
             await addUser({ intro: `You are invited for role Head of ${deptName}, please complete registration process.`, email, token: "something" })
@@ -52,7 +52,7 @@ const createDept = async (req, res, next) => {
                     userDetail.id = user.id;
                 }).catch(err => next(err))
         }
-        console.log("userdetail------->", userDetail);
+        // console.log("userdetail------->", userDetail);
         const result = await addDept({
             deptName,
             code,
@@ -144,7 +144,7 @@ const deleteDept = async (req, res, next) => {
 const getDepartments = async (req, res, next) => {
     try {
         const { roleId } = req.user;
-        console.log(roleId,);
+        // console.log(roleId,);
         const depts = await Department.find({ orgId: roleId }).populate("deptHeadId", "name email profilePhoto").exec();
         // console.log(depts);
         res.send({ success: true, depts })
@@ -157,7 +157,7 @@ const getDepartments = async (req, res, next) => {
 const getDeptHeaderStats = async (req, res, next) => {
     try {
         const { roleId } = req.user;
-        console.log(roleId, "executing");
+        // console.log(roleId, "executing");
         const facultyCount = await Faculty.find({ inDepartment: roleId }).count();
         const timetableCount = await Timetable.find({ deptId: roleId }).count();
         const salaryRequestCount = await SalaryRequest.find({ "forwardToHead.fwdId": roleId, "forwardToHead.status": "pending" }).count();

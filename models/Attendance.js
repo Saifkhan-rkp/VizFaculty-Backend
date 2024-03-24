@@ -36,7 +36,7 @@ const attendanceSchema = new mongoose.Schema({
             type:Number,
             required:true
         },
-        transfered:{
+        isTransfered:{
             type:Boolean,
             default:false
         }

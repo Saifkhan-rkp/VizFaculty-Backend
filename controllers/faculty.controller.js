@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 const { rolesAndRef, addUser } = require("../configs/helpers");
-const { Faculty, Department, User, Timetable, Attendance } = require("../models");
+const { Faculty, Department, User } = require("../models");
 const { TimetableService } = require("../services/timetable.service");
 const catchAsync = require("../configs/catchAsync");
 const { aggregateSalary } = require("../services/attendance.service");
