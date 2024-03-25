@@ -210,7 +210,7 @@ const getFaculties = async (req, res, next) => {
         const { role, roleId } = req.user;
         const search = {};
         const populate = [
-            { path: "faculty", select: "name email profile" },
+            { path: "faculty", select: "name email profilePhoto" },
             { path: "inDepartment", select: "_id deptName code" },
         ]
         if (role === "faculty") {
