@@ -1,6 +1,8 @@
 const catchAsync = require("../configs/catchAsync");
+const { Constants } = require("../configs/constants");
 const { SalaryRequest, Faculty } = require("../models");
 const attendanceService = require("../services/attendance.service");
+const salaryRequestService = require("../services/salaryRequest.service");
 
 
 const createSalaryRequest = catchAsync(async (req, res, next) => {
@@ -31,8 +33,19 @@ const getLatestSalaryRequest = catchAsync(async (req, res) => {
     res.send({ success: Object.keys(result || {}).length > 0, salaryRequest: result });
 });
 
+
+const getFrowordedApplications = catchAsync(async (req, res) => {
+    const { roleId, role } = req.user;
+    if (![Constants.ROLES.adminDept, Constants.ROLES.hod].includes(role)) {
+        res.status(401).send({ success: false, message: "Unauthorized to access Salary Requests" })
+    }
+    const result = await salaryRequestService.getRequestsByForwordStatus(role === Constants.ROLES.hod ? "forwardToHead" : "forwardToAdminDept", roleId);
+    res.send({ success: true, requests: result || [] });
+});
+
 module.exports = {
     createSalaryRequest,
     getSalaryByDateRange,
-    getLatestSalaryRequest
+    getLatestSalaryRequest,
+    getFrowordedApplications,
 }

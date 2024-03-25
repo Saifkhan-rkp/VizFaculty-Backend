@@ -140,23 +140,23 @@ const todaysAttendance = catchAsync(async (req, res, next) => {
       // console.log(attCopy.attendance);
       schedule.forEach((scd) =>
       (scd.marked = attendance?.attendance.some((att) =>
-      att?._id.equals(scd?._id)
+        att?._id.equals(scd?._id)
       ))
       );
     }
     if (transfered.length > 0) {
       schedule.forEach((scd) =>
       (scd.transfered = transfered.some((trnf) =>
-      trnf?.transferScheduleId.equals(scd?._id)
+        trnf?.transferScheduleId.equals(scd?._id)
       )));
     }
   } else {
     schedule.forEach((scd) => (scd.marked = false));
   }
-  const tempTranferTome=[]
-  transferedToMe.forEach((scd) => 
+  const tempTranferTome = []
+  transferedToMe.forEach((scd) =>
     // scd.toObject()
-    tempTranferTome.push({...scd._doc,newSubject: attendance?.attendance.find((att) => att?._id.equals(scd?._id))?.subject, marked : attendance?.attendance.some((att) => att?._id.equals(scd?._id))}) 
+    tempTranferTome.push({ ...scd._doc, newSubject: attendance?.attendance.find((att) => att?._id.equals(scd?._id))?.subject, marked: attendance?.attendance.some((att) => att?._id.equals(scd?._id)) })
   );
   // console.log("Tr to me schedule -> ", tempTranferTome);
   res.status(201).send({ success: true, schedule, attendance: attCopy, transfered: tempTranferTome });
@@ -209,7 +209,14 @@ const submitNFCAttendance = catchAsync(async (req, res, next) => {
   );
   res.send({ success: Object.keys(att.toObject()).length > 0, message: "Attendance recorded" })
 })
-module.exports = { getAttendance, submitAttendance, todaysAttendance, getAttendanceByMonth, submitNFCAttendance };
+
+const attendanceByDateRange = catchAsync(async (req, res) => {
+  const { facultyId, dateFrom, dateTo } = req.body;
+  const result = await attendanceService.getAttendanceByDateRange(facultyId, dateFrom, dateTo);
+
+  res.send({ success: true, attendances: result || [] })
+})
+module.exports = { getAttendance, submitAttendance, todaysAttendance, getAttendanceByMonth, submitNFCAttendance, attendanceByDateRange };
 
 // // {$mergeObjects:[{schedule:},{yearAndBranch:"$name"}]}
 // { $match: { deptId: faculty.inDepartment } },
