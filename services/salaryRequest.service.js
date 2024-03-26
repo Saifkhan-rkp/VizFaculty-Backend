@@ -14,7 +14,7 @@ module.exports = {
     async expenditureAggregation(forwordedTo, fwdId) {
         const result = await SalaryRequest.aggregate([{
             $match: {
-                [`${forwordedTo}.status`]: "paid",
+                [`${forwordedTo}.status`]: "approved",
                 [`${forwordedTo}.fwdId`]: new mongoose.Types.ObjectId(fwdId)
             }
         }, {
