@@ -55,7 +55,7 @@ const createFaculty = async (req, res, next) => {
         // console.log(getDept);
         if (!getDept)
             return next({
-                statusCode: 401,
+                statusCode: 403,
                 message: "You are not authorized to Add faculty",
             });
 
@@ -124,15 +124,10 @@ const modifyFaculty = async (req, res, next) => {
         const toModify = req.body;
         if (!mongoose.isValidObjectId(fId))
             return next({ message: "invalid refrence for request", statusCode: 400 });
-        const isFacultyModified = await Faculty.updateOne(
-            { _id: fId },
-            { $set: toModify, $currentDate: { updatedAt: true } }
-        );
-        if (isFacultyModified.modifiedCount > 0)
-            return res
-                .status(201)
-                .send({ success: true, message: "Faculty Updated Successfully!" });
-        res.send({ success: false, message: "Unable to update Faculty" });
+        const isFacultyModified = await facultyService.updateFaculty(fId, toModify);
+        return res
+            .status(isFacultyModified.modifiedCount > 0 ? 201: 409)
+            .send({ success: isFacultyModified.modifiedCount > 0, message: isFacultyModified.modifiedCount > 0 ? "Faculty Updated Successfully!" :"Unable to update Faculty"});
     } catch (error) {
         error.statusCode = 500;
         next(error);

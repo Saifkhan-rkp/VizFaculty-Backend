@@ -37,7 +37,7 @@ const getLatestSalaryRequest = catchAsync(async (req, res) => {
 const getFrowordedApplications = catchAsync(async (req, res) => {
     const { roleId, role } = req.user;
     if (![Constants.ROLES.adminDept, Constants.ROLES.hod].includes(role)) {
-        res.status(401).send({ success: false, message: "Unauthorized to access Salary Requests" })
+        res.status(403).send({ success: false, message: "Unauthorized to access Salary Requests" })
     }
     const result = await salaryRequestService.getRequestsByForwordStatus(role === Constants.ROLES.hod ? "forwardToHead" : "forwardToAdminDept", roleId);
     res.send({ success: true, requests: result || [] });
