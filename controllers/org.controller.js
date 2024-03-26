@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { Organization, User } = require("../models");
 const { addUser, rolesAndRef } = require("../configs/helpers");
+const catchAsync = require("../configs/catchAsync");
 
 async function addOrg(details) {
     console.log("here 4");
@@ -9,8 +10,8 @@ async function addOrg(details) {
         console.log("here 5");
         // let ret;
         await org.save();
-        const modifyRole =await User.updateOne({_id:details.auth},{role:rolesAndRef.adminDept.role, model_type:rolesAndRef.adminDept.ref, roleId: org._id});
-        return { success: true, org, isRoleUpdated: modifyRole.modifiedCount>0 };
+        const modifyRole = await User.updateOne({ _id: details.auth }, { role: rolesAndRef.adminDept.role, model_type: rolesAndRef.adminDept.ref, roleId: org._id });
+        return { success: true, org, isRoleUpdated: modifyRole.modifiedCount > 0 };
     } catch (error) {
         console.log(error);
         return { success: false, message: error.message }
@@ -21,7 +22,7 @@ const createOrg = async (req, res, next) => {
     try {
         console.log("here..");
         const { name, code, email } = req.body;
-        const userAlive =await User.findOne({ email });
+        const userAlive = await User.findOne({ email });
         console.log("here 2");
         if (userAlive) {
             console.log("here 3");
@@ -30,26 +31,26 @@ const createOrg = async (req, res, next) => {
                 code,
                 auth: new mongoose.Types.ObjectId(userAlive._id)
             });
-            if(result.success){
+            if (result.success) {
                 res.status(201).send({ success: true, message: "Organization/Institution Registered Successfully!", ...result });
-            }else if(!result.success){
+            } else if (!result.success) {
                 result.statusCode = 500;
                 next(result);
             }
         } else {
             addUser({ intro: "You are invited for role Adminstration Departmet Head, please complete registration process.", email, })
                 .then(async user => {
-                    const result =await addOrg({
+                    const result = await addOrg({
                         name,
                         code,
                         auth: user.id
                     });
-                    if(result.success){
+                    if (result.success) {
                         res.status(201).send({ success: true, message: "Organization/Institution Registered Successfully!", ...result });
-                    }else if(!result.success){
+                    } else if (!result.success) {
                         result.statusCode = 500;
                         next(result);
-                    }  
+                    }
 
                 }).catch(err => next(err))
         }
@@ -71,7 +72,7 @@ const getOrgById = async (req, res, next) => {
     try {
         if (!mongoose.isValidObjectId(orgId))
             return next({ message: "invalid refrence for request", statusCode: 400 });
-        const orgDoc =await Organization.findOne({ _id:new mongoose.Types.ObjectId(orgId) }, { _id: 0, });
+        const orgDoc = await Organization.findOne({ _id: new mongoose.Types.ObjectId(orgId) }, { _id: 0, });
         if (!orgDoc)
             return next({ message: "Not Found", statusCode: 404 });
         res.send(orgDoc);
@@ -82,4 +83,9 @@ const getOrgById = async (req, res, next) => {
     }
 };
 
-module.exports = { createOrg, getOrgById }
+const getOrgForSettings = catchAsync(async (req, res) => {
+    const { roleId } = req.user;
+    const result = await Organization.findOne({ _id: roleId })
+    res.send({ success: true, org: result });
+});
+module.exports = { createOrg, getOrgById, getOrgForSettings }

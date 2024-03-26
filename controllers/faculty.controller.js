@@ -253,6 +253,16 @@ const getFacultyHeaderStatus = catchAsync(async (req, res, next) => {
         totalSubject
     })
 });
+
+const getFacultyForSettings = catchAsync(async (req, res) => {
+    const { roleId } = req.user;
+    const result = await Faculty.findOne({ _id: roleId })
+        .select("-faculty -addedBy -isActive")
+        .populate([{ path: "inOrganization", select: "name" }, { path: "inDepartment", select: "deptName" }]);
+    res.send({ success: true, faculty: result || {} });
+});
+
+
 module.exports = {
     createFaculty,
     getFaculty,
@@ -260,7 +270,8 @@ module.exports = {
     deleteFaculty,
     getSingleDaySchedule,
     getFaculties,
-    getFacultyHeaderStatus
+    getFacultyHeaderStatus,
+    getFacultyForSettings
 };
 
 // const schedules = await Timetable.aggregate([
