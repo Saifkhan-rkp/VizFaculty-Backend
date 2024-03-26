@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const { User } = require('../../models');
 const sendMail = require('../../configs/sendMail');
 const { default: mongoose } = require('mongoose');
+const catchAsync = require('../../configs/catchAsync');
 
 const SECRET_KEY = process.env.ADD_USER_SECRET || "VizFaculty is Calculating";
 // console.log(SECRET_KEY);
@@ -149,9 +150,9 @@ const completeRegister = async (req, res, next) => {
             }
             console.log(user);
             const hashedPass = CryptoJS.AES.encrypt(password, SECRET_KEY).toString();
-            const isRegisterComplete = await User.findOneAndUpdate({ email: user.email }, { name, password: hashedPass }, { returnDocument: 'after', projection:{name:1, email:1} });
+            const isRegisterComplete = await User.findOneAndUpdate({ email: user.email }, { name, password: hashedPass }, { returnDocument: 'after', projection: { name: 1, email: 1 } });
             if (isRegisterComplete)
-                return res.status(201).send({ success: true, user:isRegisterComplete, message: "Register Complete Successfully..!" });
+                return res.status(201).send({ success: true, user: isRegisterComplete, message: "Register Complete Successfully..!" });
 
             res.send({ success: false, message: "there is some problem while Registering User..!" });
         })
@@ -167,15 +168,38 @@ const getUser = async (req, res, next) => {
         const { userId } = req.user;
         if (!mongoose.isValidObjectId(userId))
             return next({ message: "invalid refrence for request", statusCode: 400 });
-        const user = await User.findOne({_id:userId});
-        if(!user)
-            return next({statusCode:404, message:"user not found / maybe user deleted"});
-        const {name, email, role, roleId } = user; 
-        res.send({success:true, user:{name, email, role, roleId}});
+        const user = await User.findOne({ _id: userId });
+        if (!user)
+            return next({ statusCode: 404, message: "user not found / maybe user deleted" });
+        const { name, email, role, roleId } = user;
+        res.send({ success: true, user: { name, email, role, roleId } });
     } catch (error) {
         error.statusCode = 500;
         next(error)
     }
 };
 
-module.exports = { register, login, verify, forgotPassword, resetPassword, completeRegister, getUser };
+
+const changePassword = catchAsync(async (req, res) => {
+    const { userId } = req.user;
+    const { oldPassword, newPassword } = req.body;
+    const user = await User.findOne({ _id: userId });
+    const bytes = CryptoJS.AES.decrypt(
+        user.password,
+        SECRET_KEY
+    );
+    const originalPassword = bytes.toString(CryptoJS.enc.Utf8);
+    if (originalPassword !== oldPassword)
+        return res.status(401).send({success:false, message: "Password does not matched" });
+
+    user.password = CryptoJS.AES.encrypt(newPassword, SECRET_KEY).toString();
+
+    user.save();
+    res.send(
+        {
+            success: true,
+            message: "Password changed successfuly"
+        }
+    );
+})
+module.exports = { register, login, verify, forgotPassword, resetPassword, completeRegister, getUser, changePassword };

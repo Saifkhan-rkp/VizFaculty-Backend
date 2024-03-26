@@ -1,9 +1,12 @@
 const { getDept, createDept, modifyDept, deleteDept, getDepartments } = require('../controllers');
+const { getDeptHeaderStats } = require('../controllers/department.controller');
 const { authM } = require('../middleware');
 
 const router = require('express').Router();
 
-router.get("/dept/:deptId", getDept)
+router.get("/dept/v1/headerstats", authM, getDeptHeaderStats);
+
+router.get("/dept/:deptId", getDept);
 
 router.get("/dept/getData", authM, getDept);
 
