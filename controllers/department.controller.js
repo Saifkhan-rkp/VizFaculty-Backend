@@ -1,6 +1,7 @@
 const { default: mongoose } = require("mongoose");
 const { User, Department, Organization, Faculty, Timetable, SalaryRequest } = require("../models");
 const { addUser, rolesAndRef } = require("../configs/helpers");
+const { Constants } = require("../configs/constants");
 
 
 const addDept = async (deptData) => {
@@ -161,7 +162,8 @@ const getDeptHeaderStats = async (req, res, next) => {
         const facultyCount = await Faculty.find({ inDepartment: roleId }).count();
         const timetableCount = await Timetable.find({ deptId: roleId }).count();
         const salaryRequestCount = await SalaryRequest.find({ "forwardToHead.fwdId": roleId, "forwardToHead.status": "pending" }).count();
-        res.send({ facultyCount, timetableCount, salaryRequestCount });
+        const expenditure = await salaryRequestService.expenditureAggregation(role === Constants.ROLES.hod ? "forwardToHead" : "forwardToAdminDept", roleId);
+        res.send({ facultyCount, timetableCount, salaryRequestCount, expenditure: expenditure?.expenditure || 0,});
     } catch (error) {
         console.log(error);
         next({ statusCode: 500, message: error.message })

@@ -41,7 +41,7 @@ router.post("/v1/settings/update", authM, catchAsync(async (req, res) => {
     } else if (role === Constants.ROLES.adminDept) {
         const { orgName, code } = req.body;
         if (orgName && code) {
-            update = await Organization.updateOne({ _id: roleId }, { $set: { orgName, code } })
+            update = await Organization.updateOne({ _id: roleId }, { $set: { name: orgName, code } })
         }
     }
     const fullUpdate = userUpdate.modifiedCount > 0 || update.modifiedCount > 0;

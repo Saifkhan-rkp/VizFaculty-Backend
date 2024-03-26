@@ -1,7 +1,9 @@
 const { default: mongoose } = require("mongoose");
-const { Organization, User } = require("../models");
+const { Organization, User, Faculty, Department, SalaryRequest } = require("../models");
 const { addUser, rolesAndRef } = require("../configs/helpers");
 const catchAsync = require("../configs/catchAsync");
+const salaryRequestService = require("../services/salaryRequest.service");
+const { Constants } = require("../configs/constants");
 
 async function addOrg(details) {
     console.log("here 4");
@@ -88,4 +90,21 @@ const getOrgForSettings = catchAsync(async (req, res) => {
     const result = await Organization.findOne({ _id: roleId })
     res.send({ success: true, org: result });
 });
-module.exports = { createOrg, getOrgById, getOrgForSettings }
+
+const getOrgHeaderStatus = catchAsync(async (req, res, next) => {
+    const { role, roleId } = req.user;
+    // const { month } = req.query;
+    const facultyCount = await Faculty.find({ inOrganization: roleId }).count();
+    const deptCount = await Department.find({ orgId: roleId }).count();
+    const salaryRequestCount = await SalaryRequest.find({ "forwardToAdminDept.fwdId": roleId, "forwardToAdminDept.status": "pending" }).count();
+    const expenditure = await salaryRequestService.expenditureAggregation(role === Constants.ROLES.hod ? "forwardToHead" : "forwardToAdminDept", roleId);
+
+    res.send({
+        facultyCount,
+        deptCount,
+        salaryRequestCount,
+        expenditure: expenditure?.expenditure || 0,
+    })
+});
+
+module.exports = { createOrg, getOrgById, getOrgForSettings, getOrgHeaderStatus }
