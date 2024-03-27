@@ -2,6 +2,7 @@ const { default: mongoose } = require("mongoose");
 const { User, Department, Organization, Faculty, Timetable, SalaryRequest } = require("../models");
 const { addUser, rolesAndRef } = require("../configs/helpers");
 const { Constants } = require("../configs/constants");
+const salaryRequestService = require("../services/salaryRequest.service");
 
 
 const addDept = async (deptData) => {
@@ -157,7 +158,7 @@ const getDepartments = async (req, res, next) => {
 
 const getDeptHeaderStats = async (req, res, next) => {
     try {
-        const { roleId } = req.user;
+        const { roleId, role } = req.user;
         // console.log(roleId, "executing");
         const facultyCount = await Faculty.find({ inDepartment: roleId }).count();
         const timetableCount = await Timetable.find({ deptId: roleId }).count();
