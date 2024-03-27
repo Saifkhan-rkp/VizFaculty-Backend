@@ -8,7 +8,7 @@ const nodeEnv = process.env.NODE_ENV || 'development';
 const isProd = nodeEnv === 'production';
 
 const corsOptions = {
-  origin:  [prodOrigins,'https://viz-faculty-front-end.vercel.app', 'https://vizfaculty.vercel.app'],
+  origin:  [prodOrigins, 'https://beta-vizfaculty.vercel.app' ],
   credentials: true,
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   preflightContinue: false,
