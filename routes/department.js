@@ -16,6 +16,6 @@ router.post("/dept", authM, createDept);
 
 router.put("/dept/:deptId", modifyDept);
 
-router.delete("/dept/:deptId", deleteDept);
+router.delete("/dept/:deptId", authM, deleteDept);
 
 module.exports = router;
