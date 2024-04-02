@@ -14,10 +14,10 @@ process.on('unhandledRejection',(reason)=>{
 });
 
 //Middlewares
+securityMiddleware(app);
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 loggerMiddleware(app);
-securityMiddleware(app);
 
 //routes for api
 routes(app);

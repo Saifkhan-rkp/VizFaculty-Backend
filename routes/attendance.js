@@ -15,6 +15,8 @@ router.post("/attendance/view/byDateRange", authM, attendanceByDateRange);
 
 router.get("/attendance/by-month/:month", authM, getAttendanceByMonth);
 
-router.get("/attendance/nfc/:roleId/:date", verifyNFC, submitNFCAttendance)
+router.get("/attendance/nfc/:roleId/:date", verifyNFC, submitNFCAttendance);
+
+router.get("/attendance/no-auth-nfc/:roleId/:date", submitNFCAttendance);
 
 module.exports = router;
