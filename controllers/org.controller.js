@@ -107,4 +107,13 @@ const getOrgHeaderStatus = catchAsync(async (req, res, next) => {
     })
 });
 
-module.exports = { createOrg, getOrgById, getOrgForSettings, getOrgHeaderStatus }
+
+const getDeptByExpence = catchAsync(async (req, res) => {
+    const { roleId } = req.user;
+    const getDepts = await Department.find({ orgId: roleId }, { deptHeadId: 1, faculties: 1, deptName: 1, code:1 }).populate([{path:"deptHeadId", select:"name email profilePhoto"}]);
+    res.send({
+        success:true,
+        expDepts: getDepts
+    })
+})
+module.exports = { createOrg, getOrgById, getOrgForSettings, getOrgHeaderStatus, getDeptByExpence }
