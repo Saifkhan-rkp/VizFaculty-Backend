@@ -43,9 +43,29 @@ const getFrowordedApplications = catchAsync(async (req, res) => {
     res.send({ success: true, requests: result || [] });
 });
 
+const changApplicationStatus = catchAsync(async (req, res) => {
+    const { role, roleId } = req.user;
+    const { id, status } = req.body;
+    const updateRole = role === Constants.ROLES.hod ? "forwardToHead" : "forwardToAdminDept";
+    console.log((role === Constants.ROLES.adminDept && status !== "sentback"), (role === Constants.ROLES.hod && status === "approved"))
+    console.log((role === Constants.ROLES.adminDept && status !== "sentback") || (role === Constants.ROLES.hod && status === "approved"));
+    const forwordToAdmin = (role === Constants.ROLES.adminDept && status !== "sentback") || (role === Constants.ROLES.hod && status === "approved");
+    const update = {};
+    if (forwordToAdmin) {
+        update["forwardToAdminDept.date"] = new Date().toDateString();
+        update["forwardToAdminDept.isForwarded"] = forwordToAdmin;
+    }
+    console.log(update)
+    const result = await SalaryRequest.updateOne({ _id: id, [`${updateRole}.fwdId`]: roleId }, { [`${updateRole}.status`]: status, ...update });
+    console.log(result);
+    res.send({ success: result.modifiedCount > 0, message: "Request Updated" })
+
+});
+
 module.exports = {
     createSalaryRequest,
     getSalaryByDateRange,
     getLatestSalaryRequest,
     getFrowordedApplications,
+    changApplicationStatus,
 }

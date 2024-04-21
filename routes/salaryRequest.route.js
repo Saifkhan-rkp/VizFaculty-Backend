@@ -1,11 +1,13 @@
 
 
-const { createSalaryRequest, getSalaryByDateRange, getLatestSalaryRequest, getFrowordedApplications } = require('../controllers/salaryRequest.controller');
+const { createSalaryRequest, getSalaryByDateRange, getLatestSalaryRequest, getFrowordedApplications, changApplicationStatus } = require('../controllers/salaryRequest.controller');
 const { authM } = require('../middleware');
 
 const router = require('express').Router();
 
 router.post("/salary-request/generate", authM, createSalaryRequest);
+
+router.post("/salary-request/updateStatus", authM, changApplicationStatus);
 
 router.post("/salary-request/salaryByDateRange", authM, getSalaryByDateRange)
 
